@@ -13,7 +13,7 @@ export type stateUserType = {
   currentTask: string;
 };
 
-const initialState: { user: stateUserType } = {
+export const initialGlobalUserState: { user: stateUserType } = {
   user: {
     uid: "",
     state: { state: "free" },
@@ -35,7 +35,7 @@ const initialState: { user: stateUserType } = {
  */
 export const userSlicer = createSlice({
   name: "user",
-  initialState,
+  initialState: initialGlobalUserState,
   reducers: {
     login: (
       // LoginAction
@@ -54,7 +54,7 @@ export const userSlicer = createSlice({
     },
     logout: (state, action) => {
       //LogoutAction
-      state.user = initialState.user;
+      state.user = initialGlobalUserState.user;
     },
     updateUserState: (state, action: PayloadAction<UserStateType>) => {
       //stateのUpdateAction
