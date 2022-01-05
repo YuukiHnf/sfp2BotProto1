@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -12,6 +12,8 @@ import {
   selectUser,
 } from "../../features/user/userSlicer";
 import useLogin from "../../Hooks/useLogin";
+import { Box } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,15 +27,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type PropsType = {
+  pages: Array<{ pageName: string; onClick: void }>;
+};
+
 const ButtonAppBar = () => {
+  //const { pages } = props;
   const classes = useStyles();
   // state
   const user = useAppSelector(selectUser);
   //Login
   const { onLogout } = useLogin();
+  // const [pages, setPages] = useState<
+  //   Array<{ pageName: string; onClick: void }>
+  // >([]);
+
+  const history = useHistory();
+
+  //console.log(pages);
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" color="primary">
         <Toolbar>
           <IconButton
             edge="start"
@@ -46,9 +60,29 @@ const ButtonAppBar = () => {
           <Typography variant="h6" className={classes.title}>
             BOT-Work
           </Typography>
-          <Button color="default" onClick={onLogout}>
+          {user.isAdmin && (
+            <>
+              <Box sx={{ flexGrow: 1 }}>
+                <Button onClick={() => history.push("/")} color="inherit">
+                  HOME
+                </Button>
+              </Box>
+              <Box sx={{ flexGrow: 1 }}>
+                <Button onClick={() => history.push("/users")} color="inherit">
+                  USERS
+                </Button>
+              </Box>
+              <Box sx={{ flexGrow: 1 }}>
+                <Button onClick={() => history.push("/tasks")} color="inherit">
+                  TASKS
+                </Button>
+              </Box>
+            </>
+          )}
+          <Button color="secondary" onClick={onLogout}>
             Logout
           </Button>
+
           {/* {user !== initialGlobalUserState.user ?? (
             <Button color="default">Logout"</Button>
           )} */}

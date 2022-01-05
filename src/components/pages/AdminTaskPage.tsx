@@ -1,12 +1,13 @@
 import React from "react";
+
 import MyHeader from "../organisms/Header";
 
-const AdminPage = () => {
+const AdminTaskPage = () => {
   return (
     <>
-      <div>Admin</div>
+      <div>AdminTaskPage</div>
     </>
   );
 };
 
-export default AdminPage;
+export default AdminTaskPage;

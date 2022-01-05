@@ -33,7 +33,7 @@ export const Auth = () => {
 
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
-  //console.log(user);
+  console.log(user);
 
   const onClickLoginButton = useCallback(() => {
     onLogin({
@@ -52,6 +52,8 @@ export const Auth = () => {
   const onClickLogoutButton = useCallback(() => {
     onLogout();
   }, [onLogout, dispatch]);
+
+  console.log(`email:${email} password:${password}`);
 
   return (
     <Grid container component="main">
@@ -74,7 +76,7 @@ export const Auth = () => {
         <TextField1
           name="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={useCallback((e) => setEmail(e.target.value), [setEmail])}
         />
         <TextField1
           name="password"

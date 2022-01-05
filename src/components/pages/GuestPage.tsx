@@ -1,7 +1,16 @@
 import React from "react";
+import { useAppSelector } from "../../app/hooks";
+import { selectUser } from "../../features/user/userSlicer";
 
 const GuestPage = () => {
-  return <div>GuestPage</div>;
+  const user = useAppSelector(selectUser);
+
+  return (
+    <>
+      <div>GUEST USER</div>
+      <p>current Task is {user.currentTask}</p>
+    </>
+  );
 };
 
 export default GuestPage;

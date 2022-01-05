@@ -4,19 +4,38 @@ import AdminPage from "./components/pages/AdminPage";
 import { Auth } from "./components/pages/Auth";
 import GuestPage from "./components/pages/GuestPage";
 import { initialGlobalUserState, selectUser } from "./features/user/userSlicer";
-import { UserStateType } from "./types/userStateType";
+import Router, { Route, Switch, useHistory } from "react-router-dom";
+
 import MyHeader from "./components/organisms/Header";
+import AdminUserPage from "./components/pages/AdminUserPage";
+import AdminTaskPage from "./components/pages/AdminTaskPage";
+import { useEffect } from "react";
 
 function App() {
   const user = useAppSelector(selectUser);
+
+  const history = useHistory();
   console.log(user);
+
   return (
     <>
       <MyHeader />
       {user === initialGlobalUserState.user ? (
-        <Auth />
+        <>
+          <Auth />
+        </>
       ) : user.isAdmin ? (
-        <AdminPage />
+        <Switch>
+          <Route exact path="/">
+            <AdminPage />
+          </Route>
+          <Route exact path="/users">
+            <AdminUserPage />
+          </Route>
+          <Route exact path="/tasks">
+            <AdminTaskPage />
+          </Route>
+        </Switch>
       ) : (
         <GuestPage />
       )}
