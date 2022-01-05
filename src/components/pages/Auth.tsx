@@ -29,7 +29,7 @@ export const Auth = () => {
   const [isAdmin, setIsAdmin] = useState(true);
 
   //Login
-  const { onLogin, onLogout } = useLogin();
+  const { onLogin } = useLogin();
 
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
@@ -48,10 +48,6 @@ export const Auth = () => {
       isAdmin: isAdmin,
     });
   }, [email, password, onLogin, dispatch]);
-
-  const onClickLogoutButton = useCallback(() => {
-    onLogout();
-  }, [onLogout, dispatch]);
 
   console.log(`email:${email} password:${password}`);
 
