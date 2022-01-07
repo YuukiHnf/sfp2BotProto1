@@ -1,55 +1,73 @@
 import React, { useEffect, useState } from "react";
 
 import MaterialTable from "material-table";
-import { UserStateType } from "../../types/userStateType";
+import {
+  activeUsersCollectionType,
+  userParamsCollectionType,
+  UserStateType,
+} from "../../types/userStateType";
 // import { stateUserType } from "../../features/user/userSlicer";
-import { globalUserStateType } from "../../types/userStateType";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../features/user/userSlicer";
 import { useHistory } from "react-router-dom";
 
-// const inputUserData: Array<globalUserStateType> = [
-//   {
-//     uid: "1",
-//     photoUrl:
-//       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-//     displayName: "userName",
-//     state: { state: "free" },
-//     isAdmin: false,
-//     currentTask: "None",
-//   },
-//   {
-//     uid: "1",
-//     photoUrl:
-//       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-//     displayName: "userName",
-//     state: { state: "free" },
-//     isAdmin: false,
-//     currentTask: "None",
-//   },
-//   {
-//     uid: "2",
-//     photoUrl:
-//       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-//     displayName: "userName",
-//     state: { state: "free" },
-//     isAdmin: false,
-//     currentTask: "None",
-//   },
-//   {
-//     uid: "2",
-//     photoUrl:
-//       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-//     displayName: "userName",
-//     state: { state: "free" },
-//     isAdmin: false,
-//     currentTask: "None",
-//   },
-// ];
+// activeUserからデータをもらう例
+const inputActiveUserData: Array<activeUsersCollectionType> = [
+  {
+    uid: "1",
+    info: {
+      photoUrl: "",
+      displayName: "takashi",
+    },
+    isAdmin: false,
+  },
+  {
+    uid: "2",
+    info: {
+      photoUrl: "",
+      displayName: "tomoko",
+    },
+    isAdmin: false,
+  },
+  {
+    uid: "3",
+    info: {
+      photoUrl: "",
+      displayName: "yoshio",
+    },
+    isAdmin: false,
+  },
+];
+
+const inputUserParams: Array<userParamsCollectionType> = [
+  {
+    uid: "1",
+    userState: {
+      state: "busy",
+      currentTask: "A",
+    },
+    isActive: true,
+  },
+  {
+    uid: "2",
+    userState: {
+      state: "free",
+      currentTask: "",
+    },
+    isActive: true,
+  },
+  {
+    uid: "3",
+    userState: {
+      state: "busy",
+      currentTask: "N",
+    },
+    isActive: true,
+  },
+];
 
 // 適宜UserStateTypeが追加されてTableが追加したい時は追加
 type TableUserType = {
-  //info: Pick<stateUserType, "uid" | "displayName" | `currentTask`>;
   uid: string;
   displayName: string;
   currentTask: string;
@@ -73,7 +91,6 @@ const AdminUserPage: React.VFC = () => {
       currentTask: "Clean Room!",
     },
   ]);
-
   const user = useAppSelector(selectUser);
   const history = useHistory();
 
@@ -82,6 +99,18 @@ const AdminUserPage: React.VFC = () => {
     if (user.uid === "" || !user.isAdmin) {
       history.push("/");
     }
+    //firebaseのactiveUserとそのtaskを取ってくる clientSideJoin
+    setShowData(
+      inputActiveUserData.map((user) => ({
+        uid: user.uid,
+        displayName: user.info.displayName,
+        state: inputUserParams.filter((param) => param.uid === user.uid)[0]
+          .userState.state,
+        currentTask: inputUserParams.filter(
+          (param) => param.uid === user.uid
+        )[0].userState.currentTask,
+      }))
+    );
   }, []);
 
   return (
