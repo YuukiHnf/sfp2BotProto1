@@ -14,8 +14,8 @@ export type taskCollectionType = {
 // firebaseのtaskParameter Collection
 export type taskParamCollectionType = {
   id: string;
-  timeCost: Number;
-  afterDone: String;
+  timeCost: number;
+  afterDone: string;
   state: TaskStateType;
   by: string;
 };
@@ -29,7 +29,7 @@ export type allTaskInfomatioinType = {
     createdat: string;
   };
   state: TaskStateType;
-  timeCost: Number;
+  timeCost: number;
   afterDone: string;
   by: string;
 };

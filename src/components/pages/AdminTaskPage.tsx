@@ -2,7 +2,7 @@ import { TextField } from "@material-ui/core";
 import React, { useCallback, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
-import { selectUser } from "../../features/user/userSlicer";
+import { login, selectUser } from "../../features/user/userSlicer";
 import {
   allTaskInfomatioinType,
   taskCollectionType,
@@ -22,7 +22,7 @@ function getUniqueStr(myStrong?: number): string {
   );
 }
 
-const tableColumns = ["ID", "状態", "内容", "所要時間"];
+const tableColumns = ["ID", "状態", "内容", "所要時間", "編集", "削除"];
 
 //擬似的なFirestoreからの入力
 const inputTaskstate: Array<taskCollectionType> = [
@@ -56,9 +56,7 @@ const AdminTaskPage = () => {
   const [inputImageUrl, setInputImageUrl] = useState("");
   const [inputTimeCost, setInputTimeCost] = useState(0);
   const [inputAfterDone, setInputAfterDone] = useState("");
-  const [editedTask, setEditedTask] = useState<Array<allTaskInfomatioinType>>(
-    []
-  );
+  const [editedTaskId, setEditedTaskId] = useState<string | null>(null);
 
   // state tasks
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
@@ -68,28 +66,55 @@ const AdminTaskPage = () => {
 
   const createNewTask = () => {
     //firestoreに書き込み
-    const tmpId = getUniqueStr().toString();
-    // firestore Push
-    //ここは自動なのでいらない
-    const newTask: taskCollectionType = {
-      id: tmpId,
-      info: {
-        title: inputTitle,
-        imageUrl: inputImageUrl,
-        createdat: "timeStamp",
-        desc: inputDesc,
-      },
-    };
-    const newTaskParam: taskParamCollectionType = {
-      id: tmpId,
-      timeCost: inputTimeCost,
-      afterDone: inputAfterDone,
-      state: "ToDo",
-      by: "",
-    };
+    if (!editedTaskId) {
+      // 新規作成
+      const tmpId = getUniqueStr().toString();
+      // firestore Push
+      //ここは自動なのでいらない
+      const newTask: taskCollectionType = {
+        id: tmpId,
+        info: {
+          title: inputTitle,
+          imageUrl: inputImageUrl,
+          createdat: "timeStamp",
+          desc: inputDesc,
+        },
+      };
+      const newTaskParam: taskParamCollectionType = {
+        id: tmpId,
+        timeCost: inputTimeCost,
+        afterDone: inputAfterDone,
+        state: "ToDo",
+        by: "",
+      };
+      setTasks([...tasks, newTask]);
+      setTasksParam([...tasksParam, newTaskParam]);
+    } else {
+      const newTask: taskCollectionType = {
+        id: editedTaskId,
+        info: {
+          title: inputTitle,
+          imageUrl: inputImageUrl,
+          createdat: "timeStamp",
+          desc: inputDesc,
+        },
+      };
+      const newTaskParam: taskParamCollectionType = {
+        id: editedTaskId,
+        timeCost: inputTimeCost,
+        afterDone: inputAfterDone,
+        state: "ToDo",
+        by: "",
+      };
+      setTasks([...tasks.filter((task) => task.id !== editedTaskId), newTask]);
+      setTasksParam([
+        ...tasksParam.filter((task) => task.id !== editedTaskId),
+        newTaskParam,
+      ]);
+      setEditedTaskId(null);
+    }
 
-    setTasks([...tasks, newTask]);
-    setTasksParam([...tasksParam, newTaskParam]);
+    onClearAllLocalState();
   };
   const isInputAllData = useCallback(() => {
     return (
@@ -112,10 +137,38 @@ const AdminTaskPage = () => {
   const getLocalTaskParam = (id: string) => {
     return tasksParam.filter((task) => task.id === id)[0];
   };
+
+  const getLocalTasks = (id: string) => {
+    return tasks.filter((task) => task.id === id)[0];
+  };
+
+  const onClickDelete = (id: string) => {
+    // 本当はFirebaseで更新するだけ
+    setTasks([...tasks.filter((task) => task.id !== id)]);
+    setTasksParam([...tasksParam.filter((task) => task.id !== id)]);
+  };
+
+  // こいつはまだ編集可能にするだけ
+  const onClickEdit = (id: string) => {
+    setInputAfterDone(getLocalTaskParam(id).afterDone);
+    setInputDesc(getLocalTasks(id).info.desc);
+    setInputImageUrl(getLocalTasks(id).info.desc);
+    setInputTimeCost(getLocalTaskParam(id).timeCost);
+    setInputTitle(getLocalTasks(id).info.title);
+    setEditedTaskId(id);
+  };
+
+  const onClearAllLocalState = () => {
+    setInputAfterDone("");
+    setInputDesc("");
+    setInputImageUrl("");
+    setInputTimeCost(0);
+    setInputTitle("");
+  };
   return (
     <>
       <h1>AdminTaskPage</h1>
-      <div>{}</div>
+      <h2>{editedTaskId ? "EditExitTask" : "New Task"}</h2>
       <TextField1
         value={inputTitle}
         name={"title"}
@@ -156,7 +209,7 @@ const AdminTaskPage = () => {
         startIcon={undefined}
         onClick={() => createNewTask()}
       >
-        ADD
+        {editedTaskId ? "Edit" : "ADD"}
       </Button1>
       <table style={{ border: "1", width: "200", padding: "10" }}>
         <tbody>
@@ -172,6 +225,12 @@ const AdminTaskPage = () => {
               <td>{getLocalTaskParam(task.id).state}</td>
               <td>{task.info.title}</td>
               <td>{getLocalTaskParam(task.id).timeCost}</td>
+              <td>
+                <button onClick={() => onClickEdit(task.id)}>EDIT</button>
+              </td>
+              <td>
+                <button onClick={() => onClickDelete(task.id)}>DELE</button>
+              </td>
             </tr>
           ))}
         </tbody>
