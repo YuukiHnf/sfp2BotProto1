@@ -15,7 +15,7 @@ function App() {
   const user = useAppSelector(selectUser);
 
   const history = useHistory();
-  console.log(user);
+  //console.log(user);
 
   return (
     <>
@@ -35,9 +35,17 @@ function App() {
           <Route exact path="/tasks">
             <AdminTaskPage />
           </Route>
+          <Route path="*">
+            <h1>404</h1>
+          </Route>
         </Switch>
       ) : (
-        <GuestPage />
+        <Switch>
+          <GuestPage />
+          <Route path="*">
+            <h1>404</h1>
+          </Route>
+        </Switch>
       )}
     </>
   );

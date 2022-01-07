@@ -33,7 +33,7 @@ export const Auth = () => {
 
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
-  console.log(user);
+  //console.log(user);
 
   const onClickLoginButton = useCallback(() => {
     onLogin({
@@ -49,7 +49,7 @@ export const Auth = () => {
     });
   }, [email, password, onLogin, dispatch]);
 
-  console.log(`email:${email} password:${password}`);
+  //console.log(`email:${email} password:${password}`);
 
   return (
     <Grid container component="main">

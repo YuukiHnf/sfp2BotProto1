@@ -1,26 +1,25 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
-import { UserStateType } from "../../types/userStateType";
-import { DBUserType } from "../../types/userType";
+import {
+  UserStateType,
+  DBUserType,
+  globalUserStateType,
+} from "../../types/userStateType";
 
-export type stateUserType = {
-  uid: string;
-  photoUrl?: string;
-  displayName: string;
-  state: UserStateType;
-  isAdmin: boolean;
-  currentTask: string;
-};
-
-export const initialGlobalUserState: { user: stateUserType } = {
+export const initialGlobalUserState: { user: globalUserStateType } = {
   user: {
     uid: "",
-    state: { state: "free" },
     isAdmin: false,
-    currentTask: "",
-    photoUrl: "",
-    displayName: "unKnown",
+    info: {
+      photoUrl: "",
+      displayName: "unKnown",
+    },
+    isActive: false,
+    userState: {
+      state: "free",
+      currentTask: "",
+    },
   },
 };
 
@@ -45,11 +44,16 @@ export const userSlicer = createSlice({
       const { dbUser, isAdmin } = action.payload;
       state.user = {
         uid: dbUser.uid,
-        state: { state: "free" },
         isAdmin: isAdmin,
-        currentTask: "",
-        photoUrl: dbUser.photoURL,
-        displayName: dbUser.username,
+        info: {
+          photoUrl: dbUser.photoURL,
+          displayName: dbUser.username,
+        },
+        isActive: true,
+        userState: {
+          state: "free",
+          currentTask: "",
+        },
       };
     },
     logout: (state, action) => {
@@ -58,7 +62,7 @@ export const userSlicer = createSlice({
     },
     updateUserState: (state, action: PayloadAction<UserStateType>) => {
       //stateのUpdateAction
-      state.user.state = action.payload;
+      state.user.userState.state = action.payload;
     },
   },
 });
