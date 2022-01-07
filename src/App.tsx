@@ -15,14 +15,22 @@ function App() {
   const user = useAppSelector(selectUser);
 
   const history = useHistory();
-  console.log(user);
+  //console.log(user);
 
   return (
     <>
       <MyHeader />
       {user === initialGlobalUserState.user ? (
         <>
-          <Auth />
+          <Switch>
+            <Route exact path="/">
+              <Auth />
+            </Route>
+            <Route path="*">
+              <h1>404</h1>
+              <button onClick={() => history.push("/")}>Go Home</button>
+            </Route>
+          </Switch>
         </>
       ) : user.isAdmin ? (
         <Switch>
@@ -35,9 +43,17 @@ function App() {
           <Route exact path="/tasks">
             <AdminTaskPage />
           </Route>
+          <Route path="*">
+            <h1>404</h1>
+          </Route>
         </Switch>
       ) : (
-        <GuestPage />
+        <Switch>
+          <GuestPage />
+          <Route path="*">
+            <h1>404</h1>
+          </Route>
+        </Switch>
       )}
     </>
   );

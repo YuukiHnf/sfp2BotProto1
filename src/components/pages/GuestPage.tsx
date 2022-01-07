@@ -8,7 +8,7 @@ const GuestPage = () => {
   return (
     <>
       <div>GUEST USER</div>
-      <p>current Task is {user.currentTask}</p>
+      <p>current Task is {user.userState.currentTask}</p>
     </>
   );
 };

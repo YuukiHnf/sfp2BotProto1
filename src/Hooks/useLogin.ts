@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
 import { login, logout } from "../features/user/userSlicer";
-import { DBUserType } from "../types/userType";
+import { DBUserType } from "../types/userStateType";
 
 const useLogin = () => {
   const dispatch = useAppDispatch();
@@ -27,7 +27,7 @@ const useLogin = () => {
     //firebaseのLogout処理
 
     dispatch(logout(undefined));
-    // urlの /　移動
+    // urlの /移動
     history.push("/");
   };
 

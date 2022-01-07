@@ -33,7 +33,7 @@ export const Auth = () => {
 
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
-  console.log(user);
+  //console.log(user);
 
   const onClickLoginButton = useCallback(() => {
     onLogin({
