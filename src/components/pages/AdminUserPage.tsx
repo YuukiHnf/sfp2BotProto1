@@ -53,37 +53,27 @@ type TableUserType = {
   uid: string;
   displayName: string;
   currentTask: string;
-  state: "free" | "busy";
+  state: UserStateType;
 };
 
-const tableColumns = [
-  { title: "ID", field: "uid" },
-  { tilte: "Name", field: "displayName" },
-  { title: "Task", field: "currentTask" },
-  { title: "State", field: "state" },
-];
+// const tableColumns = [
+//   { title: "ID", field: "uid" },
+//   { tilte: "Name", field: "displayName" },
+//   { title: "Task", field: "currentTask" },
+//   { title: "State", field: "state" },
+// ];
+const tableColumns = ["ID", "Name", "State", "Task"];
 
 const AdminUserPage: React.VFC = () => {
   const [showData, setShowData] = useState<Array<TableUserType>>([
     {
       uid: "a",
       displayName: "username",
-      currentTask: "cleanRoom",
       state: "free",
+      currentTask: "Clean Room!",
     },
   ]);
 
-  // useEffect(() => {
-  //   // 本当はFirestoreから取ってくる
-  //   setShowData(
-  //     inputUserData.map((usr) => ({
-  //       uid: usr.uid,
-  //       displayName: usr.displayName,
-  //       currentTask: usr.currentTask,
-  //       state: usr.state,
-  //     }))
-  //   );
-  // }, []);
   const user = useAppSelector(selectUser);
   const history = useHistory();
 
@@ -96,12 +86,30 @@ const AdminUserPage: React.VFC = () => {
 
   return (
     <>
-      <MaterialTable
+      <h1>UserPage</h1>
+      <table style={{ border: "1", width: "200", padding: "10" }}>
+        <tbody>
+          <tr>
+            {tableColumns.map((col, i) => (
+              <th key={i}>{col}</th>
+            ))}
+          </tr>
+
+          {showData.map((data) => (
+            <tr key={data.uid}>
+              <td>{data.uid}</td>
+              <td>{data.displayName}</td>
+              <td>{data.state}</td>
+              <td>{data.currentTask}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {/* <MaterialTable
         columns={tableColumns}
         data={showData}
         options={{ showTitle: false }}
-      />
-      <div>AdminUserPage</div>
+      /> */}
     </>
   );
 };

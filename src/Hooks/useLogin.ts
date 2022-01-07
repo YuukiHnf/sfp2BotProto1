@@ -27,7 +27,7 @@ const useLogin = () => {
     //firebaseのLogout処理
 
     dispatch(logout(undefined));
-    // urlの /　移動
+    // urlの /移動
     history.push("/");
   };
 
