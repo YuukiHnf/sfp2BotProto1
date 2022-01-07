@@ -76,6 +76,7 @@ const AdminPage: React.VFC = () => {
     <>
       <h1>Home</h1>
       <div>
+        {/* {showComment ?? <CommentBlock1 id={task.id} />} */}
         <Grid container spacing={2}>
           {tasks.map((task) => (
             <Grid key={task.id} item xs={4}>

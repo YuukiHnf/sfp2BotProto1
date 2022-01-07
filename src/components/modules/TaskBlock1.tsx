@@ -9,8 +9,10 @@ import Card from "@material-ui/core/Card";
 import {
   Avatar,
   Button,
+  CardActionArea,
   CardContent,
   CardHeader,
+  CardMedia,
   makeStyles,
   Theme,
   Typography,
@@ -18,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { Person } from "@material-ui/icons";
 import { commentCollectionType } from "../../types/commentTypes";
-import CommentBlock1 from "./CommentBlock1";
+//import CommentBlock1 from "./CommentBlock1";
 
 type PropsType = {
   task: taskCollectionType;
@@ -33,6 +35,27 @@ const inputTaskParams: Array<taskParamCollectionType> = [
     afterDone: "A2",
     state: "ToDo",
     by: "1",
+  },
+  {
+    id: "A2",
+    timeCost: 15,
+    afterDone: "",
+    state: "Done",
+    by: "3",
+  },
+  {
+    id: "A3",
+    timeCost: 10,
+    afterDone: "",
+    state: "Doing",
+    by: "1",
+  },
+  {
+    id: "A4",
+    timeCost: 20,
+    afterDone: "",
+    state: "DoingChat",
+    by: "2",
   },
 ];
 
@@ -68,8 +91,22 @@ const TaskBlock1 = (props: PropsType) => {
   let styles = useStyles(theme)();
 
   useEffect(() => {
-    setParams(inputTaskParams[0]);
+    setParams(inputTaskParams.filter((_task) => _task.id === task.id)[0]);
   }, []);
+
+  const state2Color = () => {
+    if (params?.state === "ToDo") {
+      return "white";
+    } else if (params?.state === "Waiting") {
+      return "red";
+    } else if (params?.state === "Doing") {
+      return "green";
+    } else if (params?.state === "DoingChat") {
+      return "yellow";
+    } else if (params?.state === "Done") {
+      return "blue";
+    }
+  };
 
   return (
     <>
@@ -83,7 +120,7 @@ const TaskBlock1 = (props: PropsType) => {
             </Avatar>
           }
         ></CardHeader>
-        <CardContent>
+        <CardContent style={{ backgroundColor: state2Color() }}>
           <Typography variant="h4">{task.info.title}</Typography>
           <Typography variant="subtitle1">
             {params?.state} : (Cost -{params?.timeCost})
@@ -100,13 +137,8 @@ const TaskBlock1 = (props: PropsType) => {
             {showComment ? "コメントを閉じる" : "コメントを見る"}
           </Button>
           {/* <Typography className={styles.content}> */}
-          <CommentBlock1 id={task.id} />
+          {/* <CommentBlock1 id={task.id} /> */}
           {/* </Typography> */}
-          {/* {showComment ?? (
-            <Typography variant="h5">
-              <CommentBlock1 id={task.id} />
-            </Typography>
-          )} */}
         </CardContent>
       </Card>
     </>
