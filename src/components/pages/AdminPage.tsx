@@ -20,28 +20,19 @@ const inputTaskstate: Array<taskCollectionType> = [
     },
   },
 ];
-const inputTaskParams: Array<taskParamCollectionType> = [
-  {
-    id: "A1",
-    timeCost: 10,
-    afterDone: "A2",
-    state: "ToDo",
-    by: "1",
-  },
-];
 
 const AdminPage = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
 
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
-  const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
-    []
-  );
+  // const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
+  //   []
+  // );
 
-  const getTaskParams = (id: string) => {
-    return taskParams.filter((task) => task.id === id)[0];
-  };
+  // const getTaskParams = (id: string) => {
+  //   return taskParams.filter((task) => task.id === id)[0];
+  // };
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す
@@ -50,7 +41,7 @@ const AdminPage = () => {
     }
 
     setTasks(inputTaskstate);
-    setTaskParams(inputTaskParams);
+    // setTaskParams(inputTaskParams);
   }, []);
 
   return (
@@ -58,7 +49,7 @@ const AdminPage = () => {
       <h1>Home</h1>
       <div>
         {tasks.map((task) => (
-          <TaskBlock1 task={task} param={getTaskParams(task.id) ?? null} />
+          <TaskBlock1 task={task} />
         ))}
       </div>
     </>
