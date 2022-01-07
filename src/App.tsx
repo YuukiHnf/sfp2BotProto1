@@ -22,7 +22,15 @@ function App() {
       <MyHeader />
       {user === initialGlobalUserState.user ? (
         <>
-          <Auth />
+          <Switch>
+            <Route exact path="/">
+              <Auth />
+            </Route>
+            <Route path="*">
+              <h1>404</h1>
+              <button onClick={() => history.push("/")}>Go Home</button>
+            </Route>
+          </Switch>
         </>
       ) : user.isAdmin ? (
         <Switch>
