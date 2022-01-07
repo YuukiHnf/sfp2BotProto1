@@ -99,6 +99,9 @@ const AdminUserPage: React.VFC = () => {
     if (user.uid === "" || !user.isAdmin) {
       history.push("/");
     }
+    // activeUserのテーブルを取ってきたとする。
+    // その後、状況をuidにしたがって取ってくる. （本当はこのくらいのデータは同一で保管しておきたい
+
     //firebaseのactiveUserとそのtaskを取ってくる clientSideJoin
     setShowData(
       inputActiveUserData.map((user) => ({
