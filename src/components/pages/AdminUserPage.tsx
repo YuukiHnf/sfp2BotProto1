@@ -83,16 +83,18 @@ type TableUserType = {
 const tableColumns = ["ID", "Name", "State", "Task"];
 
 const AdminUserPage: React.VFC = () => {
-  const [showData, setShowData] = useState<Array<TableUserType>>([
-    {
-      uid: "a",
-      displayName: "username",
-      state: "free",
-      currentTask: "Clean Room!",
-    },
-  ]);
+  const [activeUsers, setActiveUsers] = useState<
+    Array<activeUsersCollectionType>
+  >([]);
+  const [userParams, setUserParams] = useState<Array<userParamsCollectionType>>(
+    []
+  );
   const user = useAppSelector(selectUser);
   const history = useHistory();
+
+  const getUserParams = (uid: string) => {
+    return userParams.filter((param) => param.uid === uid)[0];
+  };
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す
@@ -100,20 +102,11 @@ const AdminUserPage: React.VFC = () => {
       history.push("/");
     }
     // activeUserのテーブルを取ってきたとする。
-    // その後、状況をuidにしたがって取ってくる. （本当はこのくらいのデータは同一で保管しておきたい
+    // その後、状況をuidにしたがって取ってくる. （本当は
 
     //firebaseのactiveUserとそのtaskを取ってくる clientSideJoin
-    setShowData(
-      inputActiveUserData.map((user) => ({
-        uid: user.uid,
-        displayName: user.info.displayName,
-        state: inputUserParams.filter((param) => param.uid === user.uid)[0]
-          .userState.state,
-        currentTask: inputUserParams.filter(
-          (param) => param.uid === user.uid
-        )[0].userState.currentTask,
-      }))
-    );
+    setActiveUsers(inputActiveUserData);
+    setUserParams(inputUserParams);
   }, []);
 
   return (
@@ -127,12 +120,18 @@ const AdminUserPage: React.VFC = () => {
             ))}
           </tr>
 
-          {showData.map((data) => (
+          {activeUsers.map((data) => (
             <tr key={data.uid}>
               <td>{data.uid}</td>
-              <td>{data.displayName}</td>
-              <td>{data.state}</td>
-              <td>{data.currentTask}</td>
+              <td>{data.info.displayName}</td>
+              <td>
+                {getUserParams(data.uid) &&
+                  getUserParams(data.uid).userState.state}
+              </td>
+              <td>
+                {getUserParams(data.uid) &&
+                  getUserParams(data.uid).userState.currentTask}
+              </td>
             </tr>
           ))}
         </tbody>
