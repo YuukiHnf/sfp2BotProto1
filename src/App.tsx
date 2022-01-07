@@ -1,5 +1,5 @@
 import "./App.css";
-import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { useAppSelector } from "./app/hooks";
 import AdminPage from "./components/pages/AdminPage";
 import { Auth } from "./components/pages/Auth";
 import GuestPage from "./components/pages/GuestPage";
@@ -9,7 +9,6 @@ import Router, { Route, Switch, useHistory } from "react-router-dom";
 import MyHeader from "./components/organisms/Header";
 import AdminUserPage from "./components/pages/AdminUserPage";
 import AdminTaskPage from "./components/pages/AdminTaskPage";
-import { useEffect } from "react";
 
 function App() {
   const user = useAppSelector(selectUser);

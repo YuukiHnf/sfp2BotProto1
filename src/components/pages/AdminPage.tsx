@@ -1,3 +1,4 @@
+import { Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
@@ -19,9 +20,36 @@ const inputTaskstate: Array<taskCollectionType> = [
       imageUrl: "",
     },
   },
+  {
+    id: "A2",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
+  },
+  {
+    id: "A3",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
+  },
+  {
+    id: "A4",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
+  },
 ];
 
-const AdminPage = () => {
+const AdminPage: React.VFC = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
 
@@ -48,9 +76,13 @@ const AdminPage = () => {
     <>
       <h1>Home</h1>
       <div>
-        {tasks.map((task) => (
-          <TaskBlock1 task={task} />
-        ))}
+        <Grid container spacing={2}>
+          {tasks.map((task) => (
+            <Grid key={task.id} item xs={4}>
+              <TaskBlock1 task={task} />
+            </Grid>
+          ))}
+        </Grid>
       </div>
     </>
   );
