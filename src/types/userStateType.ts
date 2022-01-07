@@ -21,6 +21,25 @@ export type DBUserType = {
   isAnonymous: boolean;
 };
 
+//FirebaseのactiveUserDBのType
+export type activeUsersCollectionType = {
+  uid: string;
+  info: {
+    photoUrl: string;
+    displayName: string;
+  };
+  isAdmin: boolean;
+};
+//FirebaseのusrParamsDBのType
+export type userParamsCollectionType = {
+  uid: string;
+  userState: {
+    state: UserStateType;
+    currentTask: string;
+  };
+  isActive: boolean;
+};
+
 // GlobalStateのType
 export type globalUserStateType = {
   uid: string;
