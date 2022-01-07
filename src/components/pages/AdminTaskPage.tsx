@@ -222,9 +222,14 @@ const AdminTaskPage = () => {
           {tasks.map((task) => (
             <tr key={task.id}>
               <td>{task.id}</td>
-              <td>{getLocalTaskParam(task.id).state}</td>
+              <td>
+                {getLocalTaskParam(task.id) && getLocalTaskParam(task.id).state}
+              </td>
               <td>{task.info.title}</td>
-              <td>{getLocalTaskParam(task.id).timeCost}</td>
+              <td>
+                {getLocalTaskParam(task.id) &&
+                  getLocalTaskParam(task.id).timeCost}
+              </td>
               <td>
                 <button onClick={() => onClickEdit(task.id)}>EDIT</button>
               </td>

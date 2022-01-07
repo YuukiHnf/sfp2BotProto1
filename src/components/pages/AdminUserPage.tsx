@@ -124,8 +124,14 @@ const AdminUserPage: React.VFC = () => {
             <tr key={data.uid}>
               <td>{data.uid}</td>
               <td>{data.info.displayName}</td>
-              <td>{getUserParams(data.uid).userState.state}</td>
-              <td>{getUserParams(data.uid).userState.currentTask}</td>
+              <td>
+                {getUserParams(data.uid) &&
+                  getUserParams(data.uid).userState.state}
+              </td>
+              <td>
+                {getUserParams(data.uid) &&
+                  getUserParams(data.uid).userState.currentTask}
+              </td>
             </tr>
           ))}
         </tbody>
