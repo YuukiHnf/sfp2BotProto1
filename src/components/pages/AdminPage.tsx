@@ -1,23 +1,66 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../features/user/userSlicer";
-import MyHeader from "../organisms/Header";
+import {
+  taskCollectionType,
+  taskParamCollectionType,
+} from "../../types/taskTypes";
+import TaskBlock1 from "../modules/TaskBlock1";
+
+//擬似的なFirestoreからの入力
+const inputTaskstate: Array<taskCollectionType> = [
+  {
+    id: "A1",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
+  },
+];
+const inputTaskParams: Array<taskParamCollectionType> = [
+  {
+    id: "A1",
+    timeCost: 10,
+    afterDone: "A2",
+    state: "ToDo",
+    by: "1",
+  },
+];
 
 const AdminPage = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
+
+  const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
+  const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
+    []
+  );
+
+  const getTaskParams = (id: string) => {
+    return taskParams.filter((task) => task.id === id)[0];
+  };
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す
     if (user.uid === "") {
       history.push("/");
     }
+
+    setTasks(inputTaskstate);
+    setTaskParams(inputTaskParams);
   }, []);
 
   return (
     <>
-      <div>Admin</div>
+      <h1>Home</h1>
+      <div>
+        {tasks.map((task) => (
+          <TaskBlock1 task={task} param={getTaskParams(task.id) ?? null} />
+        ))}
+      </div>
     </>
   );
 };
