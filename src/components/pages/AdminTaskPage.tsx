@@ -25,17 +25,17 @@ function getUniqueStr(myStrong?: number): string {
 const tableColumns = ["ID", "状態", "内容", "所要時間", "編集", "削除"];
 
 //擬似的なFirestoreからの入力
-const inputTaskstate: Array<taskCollectionType> = [
-  {
-    id: "A1",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-];
+// const inputTaskstate: Array<taskCollectionType> = [
+//   {
+//     id: "A1",
+//     info: {
+//       title: "ゴミ拾い",
+//       desc: "拾う",
+//       createdat: "",
+//       imageUrl: "",
+//     },
+//   },
+// ];
 const inputTaskParams: Array<taskParamCollectionType> = [
   {
     id: "A1",
@@ -65,54 +65,54 @@ const AdminTaskPage = () => {
   );
 
   const createNewTask = () => {
-    //firestoreに書き込み
-    if (!editedTaskId) {
-      // 新規作成
-      const tmpId = getUniqueStr().toString();
-      // firestore Push
-      //ここは自動なのでいらない
-      const newTask: taskCollectionType = {
-        id: tmpId,
-        info: {
-          title: inputTitle,
-          imageUrl: inputImageUrl,
-          createdat: "timeStamp",
-          desc: inputDesc,
-        },
-      };
-      const newTaskParam: taskParamCollectionType = {
-        id: tmpId,
-        timeCost: inputTimeCost,
-        afterDone: inputAfterDone,
-        state: "ToDo",
-        by: "",
-      };
-      setTasks([...tasks, newTask]);
-      setTasksParam([...tasksParam, newTaskParam]);
-    } else {
-      const newTask: taskCollectionType = {
-        id: editedTaskId,
-        info: {
-          title: inputTitle,
-          imageUrl: inputImageUrl,
-          createdat: "timeStamp",
-          desc: inputDesc,
-        },
-      };
-      const newTaskParam: taskParamCollectionType = {
-        id: editedTaskId,
-        timeCost: inputTimeCost,
-        afterDone: inputAfterDone,
-        state: "ToDo",
-        by: "",
-      };
-      setTasks([...tasks.filter((task) => task.id !== editedTaskId), newTask]);
-      setTasksParam([
-        ...tasksParam.filter((task) => task.id !== editedTaskId),
-        newTaskParam,
-      ]);
-      setEditedTaskId(null);
-    }
+    // //firestoreに書き込み
+    // if (!editedTaskId) {
+    //   // 新規作成
+    //   const tmpId = getUniqueStr().toString();
+    //   // firestore Push
+    //   //ここは自動なのでいらない
+    //   const newTask: taskCollectionType = {
+    //     id: tmpId,
+    //     info: {
+    //       title: inputTitle,
+    //       imageUrl: inputImageUrl,
+    //       createdat: "timeStamp",
+    //       desc: inputDesc,
+    //     },
+    //   };
+    //   const newTaskParam: taskParamCollectionType = {
+    //     id: tmpId,
+    //     timeCost: inputTimeCost,
+    //     afterDone: inputAfterDone,
+    //     state: "ToDo",
+    //     by: "",
+    //   };
+    //   setTasks([...tasks, newTask]);
+    //   setTasksParam([...tasksParam, newTaskParam]);
+    // } else {
+    //   const newTask: taskCollectionType = {
+    //     id: editedTaskId,
+    //     info: {
+    //       title: inputTitle,
+    //       imageUrl: inputImageUrl,
+    //       createdat: "timeStamp",
+    //       desc: inputDesc,
+    //     },
+    //   };
+    //   const newTaskParam: taskParamCollectionType = {
+    //     id: editedTaskId,
+    //     timeCost: inputTimeCost,
+    //     afterDone: inputAfterDone,
+    //     state: "ToDo",
+    //     by: "",
+    //   };
+    //   setTasks([...tasks.filter((task) => task.id !== editedTaskId), newTask]);
+    //   setTasksParam([
+    //     ...tasksParam.filter((task) => task.id !== editedTaskId),
+    //     newTaskParam,
+    //   ]);
+    //   setEditedTaskId(null);
+    // }
 
     onClearAllLocalState();
   };
@@ -130,7 +130,7 @@ const AdminTaskPage = () => {
       history.push("/");
     }
 
-    setTasks(inputTaskstate);
+    // setTasks(inputTaskstate);
     setTasksParam(inputTaskParams);
   }, []);
 

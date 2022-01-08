@@ -84,11 +84,16 @@ const AdminPage: React.VFC = () => {
     (async () => {
       const allTaskSnapshot = await getDocs(getTaskCollectionRef);
       // console.log(allTaskSnapshot.docs.map((snap) => snap.data()));
+      //console.log(allTaskSnapshot.docs.forEach((snap) => console.log(snap.id)));
       setTasks(
-        allTaskSnapshot.docs.map((snap) => snap.data() as taskCollectionType)
+        allTaskSnapshot.docs.map(
+          (snap) => ({ ...snap.data(), id: snap.id } as taskCollectionType)
+        )
       );
     })();
   }, []);
+
+  console.log(tasks);
 
   return (
     <>
@@ -96,11 +101,15 @@ const AdminPage: React.VFC = () => {
       <div>
         {/* {showComment ?? <CommentBlock1 id={task.id} />} */}
         <Grid container spacing={2}>
-          {tasks.map((task) => (
-            <Grid key={task.id} item xs={4}>
-              <TaskBlock1 task={task} />
-            </Grid>
-          ))}
+          {tasks &&
+            tasks.map(
+              (task) =>
+                task && (
+                  <Grid key={`task-${task.id}`} item xs={4}>
+                    <TaskBlock1 task={task} />
+                  </Grid>
+                )
+            )}
         </Grid>
       </div>
     </>

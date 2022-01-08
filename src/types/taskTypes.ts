@@ -10,6 +10,11 @@ export type taskCollectionType = {
     imageUrl: string;
     createdat: string;
   };
+  by: {
+    uid: string;
+    displayName: string;
+    avatarUrl: string;
+  };
 };
 // firebaseのtaskParameter Collection
 export type taskParamCollectionType = {
