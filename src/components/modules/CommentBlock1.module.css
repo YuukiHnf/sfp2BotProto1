@@ -78,7 +78,7 @@
 }
 .post_button {
   border: none;
-  color: whitesmoke;
+  color: rgb(10, 10, 10);
   background-color: transparent;
   cursor: pointer;
 }

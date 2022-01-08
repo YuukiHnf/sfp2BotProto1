@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
@@ -49,9 +49,20 @@ const inputTaskstate: Array<taskCollectionType> = [
   },
 ];
 
+const useStyles = makeStyles((theme) => ({
+  grid: {
+    //margin: "auto",
+    xs: 4,
+    //lg: 3,
+    //xl: 3,
+    //maxWidth: 400,
+  },
+}));
+
 const AdminPage: React.VFC = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
+  const classes = useStyles();
 
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
   // const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(

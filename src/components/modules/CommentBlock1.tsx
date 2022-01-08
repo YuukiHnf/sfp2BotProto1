@@ -62,20 +62,20 @@ const CommentBlock1 = (props: PropsType) => {
     setComments([...comments, newComment]);
     setInputComment("");
   };
-  console.log(comments);
+  //console.log(comments);
   return (
     <>
-      {comments.map((com) => {
-        <Typography key={com?.commentId}>
-          <Avatar src={com?.avatarUrl} className={classes.small} />
-          <span>@{com?.displayName}</span>
-          <span>{com?.text} </span>
-          <span>{com?.createdAt} </span>
-        </Typography>;
-      })}
-      {/* {comments.map((com) => (
-        <div key={com.commentId}>{com}</div>
-      ))} */}
+      {comments &&
+        comments.map((com) => (
+          <div key={com.commentId}>
+            <Avatar src={com.avatarUrl} className={classes.small} />
+
+            <span>{com.displayName} </span>
+            <span>@{com.createdAt} : </span>
+            <span>{com.text} </span>
+          </div>
+        ))}
+
       <form onSubmit={submitComment}>
         <input
           className={styles.post_input}

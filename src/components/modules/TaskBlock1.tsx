@@ -20,7 +20,7 @@ import {
 } from "@material-ui/core";
 import { Person } from "@material-ui/icons";
 import { commentCollectionType } from "../../types/commentTypes";
-//import CommentBlock1 from "./CommentBlock1";
+import CommentBlock1 from "./CommentBlock1";
 
 type PropsType = {
   task: taskCollectionType;
@@ -140,6 +140,8 @@ const TaskBlock1 = (props: PropsType) => {
           {/* <CommentBlock1 id={task.id} /> */}
           {/* </Typography> */}
         </CardContent>
+
+        {showComment && <CommentBlock1 id={task.id} />}
       </Card>
     </>
   );
