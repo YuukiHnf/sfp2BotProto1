@@ -112,7 +112,7 @@ const TaskBlock1 = (props: PropsType) => {
     <>
       <Card className={styles.card}>
         <CardHeader
-          title="Hoge氏"
+          title={`state : ${params?.state}`}
           subheader={`担当者:${params?.id}`}
           avatar={
             <Avatar>
