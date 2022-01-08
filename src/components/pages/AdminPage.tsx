@@ -1,3 +1,4 @@
+import { Grid, makeStyles } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
@@ -19,29 +20,58 @@ const inputTaskstate: Array<taskCollectionType> = [
       imageUrl: "",
     },
   },
-];
-const inputTaskParams: Array<taskParamCollectionType> = [
   {
-    id: "A1",
-    timeCost: 10,
-    afterDone: "A2",
-    state: "ToDo",
-    by: "1",
+    id: "A2",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
+  },
+  {
+    id: "A3",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
+  },
+  {
+    id: "A4",
+    info: {
+      title: "ゴミ拾い",
+      desc: "拾う",
+      createdat: "",
+      imageUrl: "",
+    },
   },
 ];
 
-const AdminPage = () => {
+const useStyles = makeStyles((theme) => ({
+  grid: {
+    //margin: "auto",
+    xs: 4,
+    //lg: 3,
+    //xl: 3,
+    //maxWidth: 400,
+  },
+}));
+
+const AdminPage: React.VFC = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
+  const classes = useStyles();
 
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
-  const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
-    []
-  );
+  // const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
+  //   []
+  // );
 
-  const getTaskParams = (id: string) => {
-    return taskParams.filter((task) => task.id === id)[0];
-  };
+  // const getTaskParams = (id: string) => {
+  //   return taskParams.filter((task) => task.id === id)[0];
+  // };
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す
@@ -50,16 +80,21 @@ const AdminPage = () => {
     }
 
     setTasks(inputTaskstate);
-    setTaskParams(inputTaskParams);
+    // setTaskParams(inputTaskParams);
   }, []);
 
   return (
     <>
       <h1>Home</h1>
       <div>
-        {tasks.map((task) => (
-          <TaskBlock1 task={task} param={getTaskParams(task.id) ?? null} />
-        ))}
+        {/* {showComment ?? <CommentBlock1 id={task.id} />} */}
+        <Grid container spacing={2}>
+          {tasks.map((task) => (
+            <Grid key={task.id} item xs={4}>
+              <TaskBlock1 task={task} />
+            </Grid>
+          ))}
+        </Grid>
       </div>
     </>
   );
