@@ -9,12 +9,24 @@ import Router, { Route, Switch, useHistory } from "react-router-dom";
 import MyHeader from "./components/organisms/Header";
 import AdminUserPage from "./components/pages/AdminUserPage";
 import AdminTaskPage from "./components/pages/AdminTaskPage";
+import { useEffect } from "react";
+import { getDocs } from "firebase/firestore";
+import { getTaskCollectionRef } from "./firebase/firebase";
 
 function App() {
   const user = useAppSelector(selectUser);
 
   const history = useHistory();
   //console.log(user);
+  useEffect(() => {
+    (async () => {
+      console.log("banan");
+      const allTaskSnapshot = await getDocs(getTaskCollectionRef);
+      allTaskSnapshot.forEach((snapDoc) => {
+        console.log(snapDoc.data());
+      });
+    })();
+  }, []);
 
   return (
     <>

@@ -19,6 +19,9 @@
 .env.production.local
 .env
 
+# Firebase
+*-debug.log
+/emulatorLogs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
