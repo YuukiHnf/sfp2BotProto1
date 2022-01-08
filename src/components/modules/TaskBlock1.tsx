@@ -119,8 +119,9 @@ const TaskBlock1 = (props: PropsType) => {
               <Person></Person>
             </Avatar>
           }
+          style={{ backgroundColor: state2Color() }}
         ></CardHeader>
-        <CardContent style={{ backgroundColor: state2Color() }}>
+        <CardContent>
           <Typography variant="h4">{task.info.title}</Typography>
           <Typography variant="subtitle1">
             {params?.state} : (Cost -{params?.timeCost})
