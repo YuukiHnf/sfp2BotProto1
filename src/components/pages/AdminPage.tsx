@@ -1,8 +1,10 @@
 import { Grid, makeStyles } from "@material-ui/core";
+import { getDocs } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../features/user/userSlicer";
+import { getTaskCollectionRef } from "../../firebase/firebase";
 import {
   taskCollectionType,
   taskParamCollectionType,
@@ -10,44 +12,44 @@ import {
 import TaskBlock1 from "../modules/TaskBlock1";
 
 //擬似的なFirestoreからの入力
-const inputTaskstate: Array<taskCollectionType> = [
-  {
-    id: "A1",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-  {
-    id: "A2",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-  {
-    id: "A3",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-  {
-    id: "A4",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-];
+// const inputTaskstate: Array<taskCollectionType> = [
+//   {
+//     id: "A1",
+//     info: {
+//       title: "ゴミ拾い",
+//       desc: "拾う",
+//       createdat: "",
+//       imageUrl: "",
+//     },
+//   },
+//   {
+//     id: "A2",
+//     info: {
+//       title: "ゴミ拾い",
+//       desc: "拾う",
+//       createdat: "",
+//       imageUrl: "",
+//     },
+//   },
+//   {
+//     id: "A3",
+//     info: {
+//       title: "ゴミ拾い",
+//       desc: "拾う",
+//       createdat: "",
+//       imageUrl: "",
+//     },
+//   },
+//   {
+//     id: "A4",
+//     info: {
+//       title: "ゴミ拾い",
+//       desc: "拾う",
+//       createdat: "",
+//       imageUrl: "",
+//     },
+//   },
+// ];
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -79,8 +81,13 @@ const AdminPage: React.VFC = () => {
       history.push("/");
     }
 
-    setTasks(inputTaskstate);
-    // setTaskParams(inputTaskParams);
+    (async () => {
+      const allTaskSnapshot = await getDocs(getTaskCollectionRef);
+      // console.log(allTaskSnapshot.docs.map((snap) => snap.data()));
+      setTasks(
+        allTaskSnapshot.docs.map((snap) => snap.data() as taskCollectionType)
+      );
+    })();
   }, []);
 
   return (

@@ -18,15 +18,15 @@ function App() {
 
   const history = useHistory();
   //console.log(user);
-  useEffect(() => {
-    (async () => {
-      console.log("banan");
-      const allTaskSnapshot = await getDocs(getTaskCollectionRef);
-      allTaskSnapshot.forEach((snapDoc) => {
-        console.log(snapDoc.data());
-      });
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     console.log("banan");
+  //     const allTaskSnapshot = await getDocs(getTaskCollectionRef);
+  //     allTaskSnapshot.forEach((snapDoc) => {
+  //       console.log(snapDoc.data());
+  //     });
+  //   })();
+  // }, []);
 
   return (
     <>
