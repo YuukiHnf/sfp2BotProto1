@@ -109,15 +109,15 @@ const TaskBlock1 = (props: PropsType) => {
   }, []);
 
   const state2Color = () => {
-    if (params?.state === "ToDo") {
+    if (params.state === "ToDo") {
       return "white";
-    } else if (params?.state === "Waiting") {
+    } else if (params.state === "Waiting") {
       return "red";
-    } else if (params?.state === "Doing") {
+    } else if (params.state === "Doing") {
       return "green";
-    } else if (params?.state === "DoingChat") {
+    } else if (params.state === "DoingChat") {
       return "yellow";
-    } else if (params?.state === "Done") {
+    } else if (params.state === "Done") {
       return "blue";
     }
   };
@@ -126,8 +126,8 @@ const TaskBlock1 = (props: PropsType) => {
     <>
       <Card className={styles.card}>
         <CardHeader
-          title={`state : ${params.state ?? ""}`}
-          subheader={`担当者:${task.by.displayName ?? ""}`}
+          title={`state : ${params.state ?? "waiting..."}`}
+          subheader={`担当者:${task.by.displayName ?? "未割り当て"}`}
           avatar={
             <Avatar>
               <Person></Person>
@@ -138,7 +138,7 @@ const TaskBlock1 = (props: PropsType) => {
         <CardContent>
           <Typography variant="h4">{task.info.title}</Typography>
           <Typography variant="subtitle1">
-            {params?.state} : (Cost -{params.timeCost ?? ""})
+            {params?.state} : (Cost -{params.timeCost ?? "waiting..."})
           </Typography>
           <Typography className={styles.content}>
             説明 : {task.info.desc}
