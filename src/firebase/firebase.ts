@@ -45,5 +45,5 @@ export const getCommentCollectionRefByTaskId = (id: string) =>
   doc(db, "tasks", id, "comments");
 
 // ユーザ系
-export const getUserCollectionRef = collection(db, "users");
+export const getUserCollectionRef = collection(db, "activeUsers");
 export const getUserParamCollectionRef = collection(db, "userParams");

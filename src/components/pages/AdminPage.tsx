@@ -67,13 +67,6 @@ const AdminPage: React.VFC = () => {
   const classes = useStyles();
 
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
-  // const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
-  //   []
-  // );
-
-  // const getTaskParams = (id: string) => {
-  //   return taskParams.filter((task) => task.id === id)[0];
-  // };
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す

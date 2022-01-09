@@ -1,6 +1,3 @@
-// user状態管理用Type
-export type UserStateType = "free" | "busy";
-
 // firebase/userParams collectionの中身DB
 export type UserParamsType = {
   uid: string;
@@ -22,12 +19,22 @@ export type DBUserType = {
 };
 
 //FirebaseのactiveUserDBのType
+// user状態管理用Type
+export type UserStateType = "free" | "busy";
+
+// タスクに関する情報
+export type UserTaskStateType = {
+  state: UserStateType;
+  currentTask: string;
+};
+
 export type activeUsersCollectionType = {
   uid: string;
   info: {
     photoUrl: string;
     displayName: string;
   };
+  userState: UserTaskStateType;
   isAdmin: boolean;
 };
 //FirebaseのusrParamsDBのType
