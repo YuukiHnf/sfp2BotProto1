@@ -67,8 +67,8 @@ const AdminUserPage: React.VFC = () => {
             <tr key={user.uid}>
               <td>{user.uid}</td>
               <td>{user.info.displayName}</td>
-              <td>{user.userState.state}</td>
-              <td>{user.userState.currentTask}</td>
+              <td>{user.userTaskState.state}</td>
+              <td>{user.userTaskState.currentTask}</td>
             </tr>
           ))}
         </tbody>

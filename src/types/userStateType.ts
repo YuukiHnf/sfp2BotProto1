@@ -11,10 +11,10 @@ export type UserParamsType = {
 //FirebaseのAuthUserの情報
 export type DBUserType = {
   uid: string;
-  username: string;
-  email?: string;
+  username: string | null;
+  email?: string | null;
   password?: string;
-  photoURL: string;
+  photoURL: string | null;
   isAnonymous: boolean;
 };
 
@@ -34,7 +34,7 @@ export type activeUsersCollectionType = {
     photoUrl: string;
     displayName: string;
   };
-  userState: UserTaskStateType;
+  userTaskState: UserTaskStateType;
   isAdmin: boolean;
 };
 //FirebaseのusrParamsDBのType
@@ -52,12 +52,12 @@ export type globalUserStateType = {
   uid: string;
   isAdmin: boolean;
   info: {
-    photoUrl: string;
-    displayName: string;
+    photoUrl: string | null;
+    displayName: string | null;
   };
   isActive: boolean;
   userState: {
     state: UserStateType;
-    currentTask: string;
+    currentTask: string | null;
   };
 };

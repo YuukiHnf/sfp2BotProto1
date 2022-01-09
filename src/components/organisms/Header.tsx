@@ -82,10 +82,6 @@ const ButtonAppBar = () => {
           <Button color="secondary" onClick={onLogout}>
             Logout
           </Button>
-
-          {/* {user !== initialGlobalUserState.user ?? (
-            <Button color="default">Logout"</Button>
-          )} */}
         </Toolbar>
       </AppBar>
     </div>

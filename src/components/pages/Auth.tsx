@@ -62,8 +62,8 @@ export const Auth = () => {
         onLogin({
           dbUser: {
             uid: usrCredient.user.uid,
-            username: usrCredient.user.displayName ?? "",
-            photoURL: usrCredient.user.photoURL ?? "",
+            username: usrCredient.user.displayName,
+            photoURL: usrCredient.user.photoURL,
             isAnonymous: usrCredient.user.isAnonymous ?? false,
           },
           isAdmin: isAdmin,
@@ -79,6 +79,18 @@ export const Auth = () => {
         email,
         password
       );
+      // globalなstateへの反映
+      if (usrCredient) {
+        onLogin({
+          dbUser: {
+            uid: usrCredient.user.uid,
+            username: usrCredient.user.displayName,
+            photoURL: usrCredient.user.photoURL,
+            isAnonymous: usrCredient.user.isAnonymous ?? false,
+          },
+          isAdmin: isAdmin,
+        });
+      }
       console.log("[SUCCESS] : ", usrCredient.user);
     } catch (e: any) {
       alert(`[My-AuthWithEmail-Error]:${e.message}`);
