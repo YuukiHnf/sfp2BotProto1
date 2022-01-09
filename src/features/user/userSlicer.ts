@@ -42,6 +42,7 @@ export const userSlicer = createSlice({
       action: PayloadAction<{ dbUser: DBUserType; isAdmin: boolean }>
     ) => {
       const { dbUser, isAdmin } = action.payload;
+      // globalStateの更新
       state.user = {
         uid: dbUser.uid,
         isAdmin: isAdmin,
