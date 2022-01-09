@@ -1,4 +1,5 @@
 import { TextField } from "@material-ui/core";
+import { onLog } from "firebase/app";
 import {
   collection,
   deleteDoc,
@@ -19,6 +20,7 @@ import {
   getTaskCollectionRef,
   getTaskParamCollectionRef,
 } from "../../firebase/firebase";
+import useLogin from "../../Hooks/useLogin";
 import {
   allTaskInfomatioinType,
   taskCollectionType,
@@ -63,6 +65,7 @@ const inputTaskParams: Array<taskParamCollectionType> = [
 const AdminTaskPage = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
+  const { onLogout } = useLogin();
 
   // state input
   const [inputTitle, setInputTitle] = useState("");
@@ -175,6 +178,7 @@ const AdminTaskPage = () => {
 
     return () => {
       unSub();
+      onLogout();
     };
   }, []);
 
