@@ -24,6 +24,7 @@ import useLogin from "../../Hooks/useLogin";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase";
 
@@ -81,6 +82,10 @@ export const Auth = () => {
       );
       // globalなstateへの反映
       if (usrCredient) {
+        auth.currentUser &&
+          (await updateProfile(usrCredient.user, {
+            displayName: userName,
+          }));
         onLogin({
           dbUser: {
             uid: usrCredient.user.uid,
