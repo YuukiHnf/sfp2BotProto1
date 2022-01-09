@@ -17,16 +17,7 @@ function App() {
   const user = useAppSelector(selectUser);
 
   const history = useHistory();
-  //console.log(user);
-  // useEffect(() => {
-  //   (async () => {
-  //     console.log("banan");
-  //     const allTaskSnapshot = await getDocs(getTaskCollectionRef);
-  //     allTaskSnapshot.forEach((snapDoc) => {
-  //       console.log(snapDoc.data());
-  //     });
-  //   })();
-  // }, []);
+  console.log(user);
 
   return (
     <>

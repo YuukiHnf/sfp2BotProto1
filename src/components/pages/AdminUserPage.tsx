@@ -44,6 +44,7 @@ const AdminUserPage: React.VFC = () => {
             } as activeUsersCollectionType)
         )
       );
+      //console.log(usersSnap.docs.map((usr) => usr.data()));
     });
 
     return () => {
