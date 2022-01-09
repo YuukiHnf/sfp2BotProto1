@@ -4,6 +4,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  onSnapshot,
   runTransaction,
   serverTimestamp,
   writeBatch,
@@ -176,17 +177,17 @@ const AdminTaskPage = () => {
       history.push("/");
     }
 
-    // これだとリアルタイム反映しない
-    (async () => {
-      const allTaskSnapshot = await getDocs(getTaskCollectionRef);
-      // console.log(allTaskSnapshot.docs.map((snap) => snap.data()));
-      //console.log(allTaskSnapshot.docs.forEach((snap) => console.log(snap.id)));
+    const unSub = onSnapshot(getTaskCollectionRef, (taskSnaps) => {
       setTasks(
-        allTaskSnapshot.docs.map(
+        taskSnaps.docs.map(
           (snap) => ({ ...snap.data(), id: snap.id } as taskCollectionType)
         )
       );
-    })();
+    });
+
+    return () => {
+      unSub();
+    };
   }, []);
 
   const onClickDelete = async (id: string) => {

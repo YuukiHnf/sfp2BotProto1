@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/firebase";
 import {
@@ -20,17 +20,17 @@ const TaskTableBody1 = (props: PropsType) => {
   const [param, setParam] = useState<taskParamCollectionType>();
 
   useEffect(() => {
-    (async () => {
-      const paramRef = doc(db, "taskParams", task.id);
-      const docSnap = await getDoc(paramRef);
-      //console.log(paramSnapshot);
+    const unSub = onSnapshot(doc(db, "taskParams", task.id), (docSnap) => {
       if (docSnap.exists()) {
         setParam({
           ...docSnap.data(),
           id: docSnap.id,
         } as taskParamCollectionType);
       }
-    })();
+    });
+    return () => {
+      unSub();
+    };
   }, []);
 
   return (

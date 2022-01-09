@@ -1,5 +1,5 @@
 import { Grid, makeStyles } from "@material-ui/core";
-import { getDocs } from "firebase/firestore";
+import { getDocs, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
@@ -81,16 +81,17 @@ const AdminPage: React.VFC = () => {
       history.push("/");
     }
 
-    (async () => {
-      const allTaskSnapshot = await getDocs(getTaskCollectionRef);
-      // console.log(allTaskSnapshot.docs.map((snap) => snap.data()));
-      //console.log(allTaskSnapshot.docs.forEach((snap) => console.log(snap.id)));
+    const unSub = onSnapshot(getTaskCollectionRef, (taskSnaps) => {
       setTasks(
-        allTaskSnapshot.docs.map(
+        taskSnaps.docs.map(
           (snap) => ({ ...snap.data(), id: snap.id } as taskCollectionType)
         )
       );
-    })();
+    });
+
+    return () => {
+      unSub();
+    };
   }, []);
 
   //console.log(tasks);
