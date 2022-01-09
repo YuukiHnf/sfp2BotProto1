@@ -50,18 +50,6 @@ const tableColumns = [
   "削除",
 ];
 
-//擬似的なFirestoreからの入力
-// const inputTaskstate: Array<taskCollectionType> = [
-//   {
-//     id: "A1",
-//     info: {
-//       title: "ゴミ拾い",
-//       desc: "拾う",
-//       createdat: "",
-//       imageUrl: "",
-//     },
-//   },
-// ];
 const inputTaskParams: Array<taskParamCollectionType> = [
   {
     id: "A1",

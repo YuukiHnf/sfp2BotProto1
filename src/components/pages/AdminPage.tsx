@@ -11,46 +11,6 @@ import {
 } from "../../types/taskTypes";
 import TaskBlock1 from "../modules/TaskBlock1";
 
-//擬似的なFirestoreからの入力
-// const inputTaskstate: Array<taskCollectionType> = [
-//   {
-//     id: "A1",
-//     info: {
-//       title: "ゴミ拾い",
-//       desc: "拾う",
-//       createdat: "",
-//       imageUrl: "",
-//     },
-//   },
-//   {
-//     id: "A2",
-//     info: {
-//       title: "ゴミ拾い",
-//       desc: "拾う",
-//       createdat: "",
-//       imageUrl: "",
-//     },
-//   },
-//   {
-//     id: "A3",
-//     info: {
-//       title: "ゴミ拾い",
-//       desc: "拾う",
-//       createdat: "",
-//       imageUrl: "",
-//     },
-//   },
-//   {
-//     id: "A4",
-//     info: {
-//       title: "ゴミ拾い",
-//       desc: "拾う",
-//       createdat: "",
-//       imageUrl: "",
-//     },
-//   },
-// ];
-
 const useStyles = makeStyles((theme) => ({
   grid: {
     //margin: "auto",
