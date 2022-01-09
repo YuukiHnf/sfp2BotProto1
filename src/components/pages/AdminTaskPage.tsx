@@ -159,53 +159,6 @@ const AdminTaskPage = () => {
         alert(`[My-Update-Error]:${e}`);
       }
     }
-    // if (!editedTaskId) {
-    //   // 新規作成
-    //   const tmpId = getUniqueStr().toString();
-    //   // firestore Push
-    //   //ここは自動なのでいらない
-    //   const newTask: taskCollectionType = {
-    //     id: tmpId,
-    //     info: {
-    //       title: inputTitle,
-    //       imageUrl: inputImageUrl,
-    //       createdat: "timeStamp",
-    //       desc: inputDesc,
-    //     },
-    //   };
-    //   const newTaskParam: taskParamCollectionType = {
-    //     id: tmpId,
-    //     timeCost: inputTimeCost,
-    //     afterDone: inputAfterDone,
-    //     state: "ToDo",
-    //     by: "",
-    //   };
-    //   setTasks([...tasks, newTask]);
-    //   setTasksParam([...tasksParam, newTaskParam]);
-    // } else {
-    //   const newTask: taskCollectionType = {
-    //     id: editedTaskId,
-    //     info: {
-    //       title: inputTitle,
-    //       imageUrl: inputImageUrl,
-    //       createdat: "timeStamp",
-    //       desc: inputDesc,
-    //     },
-    //   };
-    //   const newTaskParam: taskParamCollectionType = {
-    //     id: editedTaskId,
-    //     timeCost: inputTimeCost,
-    //     afterDone: inputAfterDone,
-    //     state: "ToDo",
-    //     by: "",
-    //   };
-    //   setTasks([...tasks.filter((task) => task.id !== editedTaskId), newTask]);
-    //   setTasksParam([
-    //     ...tasksParam.filter((task) => task.id !== editedTaskId),
-    //     newTaskParam,
-    //   ]);
-    //   setEditedTaskId(null);
-    // }
 
     onClearAllLocalState();
   };
@@ -242,6 +195,7 @@ const AdminTaskPage = () => {
        */
 
       const batch = writeBatch(db);
+      // 本当はSub Collectionコメントを削除しないといけない
 
       // task collection の削除
       //await deleteDoc(doc(db, "tasks", id));
