@@ -1,3 +1,5 @@
+import { FieldValue } from "firebase/firestore";
+
 // taskのState状態
 export type TaskStateType = "ToDo" | "Doing" | "DoingChat" | "Waiting" | "Done";
 
@@ -8,7 +10,7 @@ export type taskCollectionType = {
     title: string;
     desc: string;
     imageUrl: string;
-    createdat: string;
+    createdat: FieldValue;
   };
   by: {
     uid: string;

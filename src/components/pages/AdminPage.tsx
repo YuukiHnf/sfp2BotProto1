@@ -93,7 +93,7 @@ const AdminPage: React.VFC = () => {
     })();
   }, []);
 
-  console.log(tasks);
+  //console.log(tasks);
 
   return (
     <>
