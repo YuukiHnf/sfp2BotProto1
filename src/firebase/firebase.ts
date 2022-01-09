@@ -41,3 +41,5 @@ if (isEmulating) {
 //タスク系
 export const getTaskCollectionRef = collection(db, "tasks");
 export const getTaskParamCollectionRef = collection(db, "taskParams");
+export const getCommentCollectionRefByTaskId = (id: string) =>
+  doc(db, "tasks", id, "comments");

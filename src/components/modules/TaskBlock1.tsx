@@ -61,16 +61,16 @@ type PropsType = {
 //   },
 // ];
 
-const inputComments: Array<commentCollectionType> = [
-  {
-    commentId: "bananbabds",
-    text: "hello",
-    avatarUrl:
-      "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-    createdAt: "",
-    displayName: "Tsuji",
-  },
-];
+// const inputComments: Array<commentCollectionType> = [
+//   {
+//     commentId: "bananbabds",
+//     text: "hello",
+//     avatarUrl:
+//       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
+//     createdAt: "",
+//     displayName: "Tsuji",
+//   },
+// ];
 
 const useStyles = (theme: Theme) => {
   return makeStyles({
