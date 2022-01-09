@@ -176,6 +176,7 @@ const AdminTaskPage = () => {
       history.push("/");
     }
 
+    // これだとリアルタイム反映しない
     (async () => {
       const allTaskSnapshot = await getDocs(getTaskCollectionRef);
       // console.log(allTaskSnapshot.docs.map((snap) => snap.data()));
