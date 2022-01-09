@@ -5,6 +5,7 @@ import styles from "./CommentBlock1.module.css";
 
 //materialUI
 import SendIcon from "@material-ui/icons/Send";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 type PropsType = {
   id: string;
@@ -24,7 +25,7 @@ const inputStartComments: Array<commentCollectionType> = [
     text: "hello",
     avatarUrl:
       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-    createdAt: "12:00",
+    createdat: serverTimestamp(),
     displayName: "Tsuji",
   },
 ];
@@ -51,15 +52,15 @@ const CommentBlock1 = (props: PropsType) => {
 
   const submitComment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newComment: commentCollectionType = {
-      commentId: getUniqueStr(),
+    const newComment: Omit<commentCollectionType, "commentId"> = {
       text: inputComment,
-      createdAt: "12:01",
+      createdat: serverTimestamp(),
       displayName: "Yuki",
       avatarUrl:
         "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
     };
-    setComments([...comments, newComment]);
+    setComments([...comments, { commentId: getUniqueStr(), ...newComment }]);
+    //const docRef = collection(doc(db, 'tasks', id)
     setInputComment("");
   };
   //console.log(comments);
@@ -71,7 +72,7 @@ const CommentBlock1 = (props: PropsType) => {
             <Avatar src={com.avatarUrl} className={classes.small} />
 
             <span>{com.displayName} </span>
-            <span>@{com.createdAt} : </span>
+            {/* <span>@{com.createdat} : </?span> */}
             <span>{com.text} </span>
           </div>
         ))}
