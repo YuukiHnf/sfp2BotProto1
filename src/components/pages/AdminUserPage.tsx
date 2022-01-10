@@ -51,7 +51,6 @@ const AdminUserPage: React.VFC = () => {
 
     return () => {
       unSub();
-      onLogout();
     };
   }, []);
 

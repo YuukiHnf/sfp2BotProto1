@@ -57,7 +57,6 @@ const GuestBusyPage = (props: PropsType) => {
       );
       return () => {
         unSub();
-        onLogout();
       };
     }
   }, [user.userTaskState.currentTask]);

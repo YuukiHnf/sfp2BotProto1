@@ -178,7 +178,6 @@ const AdminTaskPage = () => {
 
     return () => {
       unSub();
-      onLogout();
     };
   }, []);
 
