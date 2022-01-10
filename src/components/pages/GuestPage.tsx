@@ -1,7 +1,7 @@
 import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../app/hooks";
-import { selectUser } from "../../features/user/userSlicer";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectUser, updateUserState } from "../../features/user/userSlicer";
 import { db, getUserCollectionRef } from "../../firebase/firebase";
 import useLogin from "../../Hooks/useLogin";
 import { activeUsersCollectionType } from "../../types/userStateType";
@@ -10,17 +10,22 @@ import GuestFreePaga from "./GuestPages/GuestFreePaga";
 
 const GuestPage = () => {
   const user = useAppSelector(selectUser);
+  const dispatch = useAppDispatch();
 
-  const [activeUserState, setActiveUserState] =
-    useState<activeUsersCollectionType>({} as activeUsersCollectionType);
+  // const [activeUserState, setActiveUserState] =
+  //   useState<activeUsersCollectionType>({} as activeUsersCollectionType);
   const { onLogout } = useLogin();
 
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "activeUsers", user.uid), (userSnap) => {
-      setActiveUserState({
-        ...userSnap.data(),
-        uid: userSnap.id,
-      } as activeUsersCollectionType);
+      if (userSnap.exists()) {
+        dispatch(
+          updateUserState({
+            state: userSnap.data().userTaskState.state,
+            currentTask: userSnap.data().userTaskState.currentTask,
+          })
+        );
+      }
     });
     return () => {
       unSub();
@@ -32,8 +37,8 @@ const GuestPage = () => {
     <>
       <div>GUEST USER : {user.info.displayName}さん</div>
 
-      {user.userState.state === "busy" ? (
-        <GuestBusyPage activeUserInfo={activeUserState} />
+      {user.userTaskState.state === "busy" ? (
+        <GuestBusyPage />
       ) : (
         <GuestFreePaga />
       )}
