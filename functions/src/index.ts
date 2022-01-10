@@ -7,8 +7,28 @@ const adminDB = admin.firestore();
 
 /** ユーザが「email&password」でsignUpしたときに、そのユーザのdisplayNameなどを反映させ、その後、userParamを定義する
  * 1:AuthのCreateをリッスンする
- * 2:そのIdを元に、DisplayNameを... いや、Clientに情報があるから、これはClientに任せよう
+ * 2:そのIdを元に、DisplayNameを... いや、Clientに情報があるから、これはClientに任せよう.
+ * とりあえず、userParamの定義だけしよう
  */
+
+exports.registerUserParamsListener = functions.auth
+  .user()
+  .onCreate(async (user) => {
+    if (user) {
+      await adminDB
+        .collection("userParams")
+        .doc(user.uid)
+        .create({
+          isActive: true,
+          userTaskState: { currentTask: "", state: "free" },
+        });
+      functions.logger.log(
+        "[CREATE User]",
+        `${user.uid}`,
+        `${user.displayName}`
+      );
+    }
+  });
 
 /** ユーザが「email&password」でdeleteしたときに、userParamを削除する
  * 1:Authのdeleteをリッスンする
@@ -53,8 +73,8 @@ exports.registerAsActiveUser = functions.https.onCall(async (data, context) => {
         currentTask: "",
       },
       info: {
-        avatarUrl: context.auth.token.picture,
-        displayName: context.auth.token.name,
+        avatarUrl: context.auth.token.picture ?? "",
+        displayName: context.auth.token.name ?? "",
       },
       isAdmin: true,
     });
@@ -87,3 +107,50 @@ exports.registerAsActiveUser = functions.https.onCall(async (data, context) => {
     );
   }
 });
+
+/** ユーザがLogoutしたときに、Active User Collectionを削除して
+ *      そのユーザのuserParamをisActive=falseにする
+ *  1:LoginをListenする //今回はclientから呼び出してもらう
+ * BATCH処理
+ *  2:idを元に、activeUserから削除する
+ *  3:userParamを取得して、isActiveをfalseにする
+ * */
+
+exports.unRegisterAsActiveUser = functions.https.onCall(
+  async (data, context) => {
+    const batch = adminDB.batch();
+    if (data) {
+      const activeUsersRef = adminDB.collection("activeUsers").doc(data.uid); //doc(db, "activeUsers", usr.dbUser.uid);
+      const userParamRef = adminDB.collection("userParams").doc(data.uid); //doc(db, "userParams", usr.dbUser.uid);
+
+      // activeUserへのreference
+      batch.delete(activeUsersRef);
+
+      // userParamへのUpdate
+      batch.update(userParamRef, {
+        isActive: false,
+      });
+
+      // batch処理して、返す
+      return batch
+        .commit()
+        .then(() => {
+          console.log("[REGISTER-ActiveUser]");
+          return { isOk: true };
+        })
+        .catch(() => {
+          // error処理
+          throw new functions.https.HttpsError(
+            "unavailable",
+            "batch処理ができなかった"
+          );
+        });
+    } else {
+      // error処理
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "authが見つからなかった"
+      );
+    }
+  }
+);
