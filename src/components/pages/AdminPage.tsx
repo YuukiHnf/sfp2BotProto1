@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../features/user/userSlicer";
 import { getTaskCollectionRef } from "../../firebase/firebase";
+import useLogin from "../../Hooks/useLogin";
 import {
   taskCollectionType,
   taskParamCollectionType,
@@ -25,6 +26,7 @@ const AdminPage: React.VFC = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
   const classes = useStyles();
+  const { onLogout } = useLogin();
 
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
 
@@ -44,6 +46,7 @@ const AdminPage: React.VFC = () => {
 
     return () => {
       unSub();
+      onLogout();
     };
   }, []);
 

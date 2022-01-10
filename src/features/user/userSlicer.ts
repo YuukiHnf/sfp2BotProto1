@@ -5,6 +5,7 @@ import {
   UserStateType,
   DBUserType,
   globalUserStateType,
+  UserTaskStateType,
 } from "../../types/userStateType";
 
 export const initialGlobalUserState: { user: globalUserStateType } = {
@@ -16,7 +17,7 @@ export const initialGlobalUserState: { user: globalUserStateType } = {
       displayName: "unKnown",
     },
     isActive: false,
-    userState: {
+    userTaskState: {
       state: "free",
       currentTask: "",
     },
@@ -51,7 +52,7 @@ export const userSlicer = createSlice({
           displayName: dbUser.username,
         },
         isActive: true,
-        userState: {
+        userTaskState: {
           state: "free",
           currentTask: "",
         },
@@ -61,9 +62,9 @@ export const userSlicer = createSlice({
       //LogoutAction
       state.user = initialGlobalUserState.user;
     },
-    updateUserState: (state, action: PayloadAction<UserStateType>) => {
+    updateUserState: (state, action: PayloadAction<UserTaskStateType>) => {
       //stateのUpdateAction
-      state.user.userState.state = action.payload;
+      state.user = { ...state.user, userTaskState: action.payload };
     },
   },
 });

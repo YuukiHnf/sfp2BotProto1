@@ -17,7 +17,7 @@ function App() {
   const user = useAppSelector(selectUser);
 
   const history = useHistory();
-  console.log(user);
+  //console.log(user);
 
   return (
     <>

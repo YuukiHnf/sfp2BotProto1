@@ -9,6 +9,7 @@ import { selectUser } from "../../features/user/userSlicer";
 import { useHistory } from "react-router-dom";
 import { onSnapshot } from "firebase/firestore";
 import { getUserCollectionRef } from "../../firebase/firebase";
+import useLogin from "../../Hooks/useLogin";
 
 // 適宜UserStateTypeが追加されてTableが追加したい時は追加
 type TableUserType = {
@@ -26,6 +27,7 @@ const AdminUserPage: React.VFC = () => {
   >([]);
   const user = useAppSelector(selectUser);
   const history = useHistory();
+  const { onLogout } = useLogin();
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す
@@ -49,6 +51,7 @@ const AdminUserPage: React.VFC = () => {
 
     return () => {
       unSub();
+      onLogout();
     };
   }, []);
 

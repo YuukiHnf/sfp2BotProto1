@@ -4,7 +4,6 @@ import {
   connectFirestoreEmulator,
   collection,
   doc,
-  getDoc,
 } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
@@ -16,7 +15,7 @@ const authPort = 9099;
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
-  authDomain: isEmulating ? "" : process.env.REACT_APP_FIREBASE_DOMAIN,
+  authDomain: isEmulating ? "localhost" : process.env.REACT_APP_FIREBASE_DOMAIN,
   projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
   storageBucket: isEmulating
     ? ""

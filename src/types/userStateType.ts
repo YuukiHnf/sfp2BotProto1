@@ -56,7 +56,7 @@ export type globalUserStateType = {
     displayName: string | null;
   };
   isActive: boolean;
-  userState: {
+  userTaskState: {
     state: UserStateType;
     currentTask: string | null;
   };
