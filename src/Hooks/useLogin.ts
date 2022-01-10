@@ -18,6 +18,7 @@ const useLogin = () => {
     // Firebase側の処理
     // activeUserに書きこみ、userParamのActiveをTrueにするのを "Batch"処理
 
+    // cloudFunction-registerActiveUser
     const batch = writeBatch(db);
     const activeUsersRef = doc(db, "activeUsers", usr.dbUser.uid);
     const userParamRef = doc(db, "userParams", usr.dbUser.uid);
@@ -56,6 +57,8 @@ const useLogin = () => {
       console.log("try:signOut");
       try {
         await signOut(auth);
+
+        //cloudFunction - unregisterActiveUser()
         const batch = writeBatch(db);
         const activeUsersRef = doc(db, "activeUsers", user.uid);
         const userParamRef = doc(db, "userParams", user.uid);
