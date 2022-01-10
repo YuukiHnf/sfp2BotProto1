@@ -10,8 +10,6 @@ import MyHeader from "./components/organisms/Header";
 import AdminUserPage from "./components/pages/AdminUserPage";
 import AdminTaskPage from "./components/pages/AdminTaskPage";
 import { useEffect } from "react";
-import { getDocs } from "firebase/firestore";
-import { getTaskCollectionRef } from "./firebase/firebase";
 import useLogin from "./Hooks/useLogin";
 
 function App() {

@@ -1,5 +1,5 @@
 import { Grid, makeStyles } from "@material-ui/core";
-import { getDocs, onSnapshot } from "firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
