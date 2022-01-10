@@ -29,7 +29,6 @@ const GuestPage = () => {
     });
     return () => {
       unSub();
-      onLogout();
     };
   }, []);
 
