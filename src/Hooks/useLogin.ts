@@ -1,10 +1,11 @@
 import { signOut } from "firebase/auth";
 import { doc, writeBatch } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { login, logout, selectUser } from "../features/user/userSlicer";
-import { auth, db } from "../firebase/firebase";
+import { auth, db, functions } from "../firebase/firebase";
 import { DBUserType } from "../types/userStateType";
 
 const useLogin = () => {
@@ -18,28 +19,14 @@ const useLogin = () => {
     // Firebase側の処理
     // activeUserに書きこみ、userParamのActiveをTrueにするのを "Batch"処理
 
-    // cloudFunction-registerActiveUser
-    const batch = writeBatch(db);
-    const activeUsersRef = doc(db, "activeUsers", usr.dbUser.uid);
-    const userParamRef = doc(db, "userParams", usr.dbUser.uid);
-
-    batch.set(activeUsersRef, {
-      userTaskState: {
-        state: "free",
-        currentTask: "",
-      },
-      info: {
-        avatarUrl: usr.dbUser.photoURL,
-        displayName: usr.dbUser.username,
-      },
-      isAdmin: usr.isAdmin,
+    // // cloudFunction-registerActiveUser
+    const registerAsActiveUser = httpsCallable(
+      functions,
+      "registerAsActiveUser"
+    );
+    registerAsActiveUser().then((result: any) => {
+      console.log("registerAsActiveUser : ", result.data.isOk);
     });
-    batch.set(userParamRef, {
-      isActive: true,
-      userTaskState: { currentTask: "", state: "free" },
-    });
-    // Batch書き込み
-    await batch.commit();
 
     // Globalstateに反映させる
     dispatch(
