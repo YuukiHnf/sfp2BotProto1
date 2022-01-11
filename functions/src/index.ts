@@ -59,20 +59,20 @@ export type userParamsCollectionType = {
  */
 exports.applyTask2User = functions.https.onCall(
   async (
-    data: { uid: string; taskId: string; taskState: TaskStateType },
+    data: { params: { uid: string; taskId: string; taskState: TaskStateType } },
     context
   ) => {
-    const { uid, taskId, taskState } = data;
-    const batch = adminDB.batch();
+    const { uid, taskId, taskState } = data.params;
     if (context.auth) {
+      const batch = adminDB.batch();
+
+      console.log(
+        `[Apply] uid:${uid}@${typeof uid}, taskId:${taskId}@${typeof taskId}`
+      );
       // 変更対象
       const userRef = adminDB.collection("activeUsers").doc(uid);
       const userParamRef = adminDB.collection("userParams").doc(uid);
-      let taskRef = null;
-      if (taskState === "Doing") {
-        //もし新規割り当てなら
-        taskRef = adminDB.collection("tasks").doc(taskId);
-      }
+      const taskRef = adminDB.collection("tasks").doc(taskId);
       const taskParamRef = adminDB.collection("taskParams").doc(taskId);
 
       // タスクを割り当てられた時のユーザ状態
@@ -86,7 +86,10 @@ exports.applyTask2User = functions.https.onCall(
       // batch登録
       batch.update(userRef, userNewData);
       batch.update(userParamRef, userNewData);
-      taskRef && batch.update(taskRef, { by: { uid: uid } }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
+      taskState === "Doing" &&
+        batch.update(taskRef, {
+          by: { uid: uid },
+        }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
       batch.update(taskParamRef, { state: taskState, by: uid });
 
       return batch
@@ -119,8 +122,13 @@ exports.synUpdateTaskId2UserInfo = functions.firestore
     const newValue = change.after.data() as taskCollectionType;
     const previousValue = change.before.data() as taskCollectionType;
 
-    if (newValue.by.uid && newValue.by.uid !== previousValue.by.uid) {
-      // ユーザ割り当てがなされて書き込む時
+    // ユーザ割り当てがなされて書き込む時、または、再割り当てされている時
+    const isNeedSync =
+      (newValue.by.uid && newValue.by.uid !== previousValue.by.uid) ||
+      (newValue.by.uid === previousValue.by.uid &&
+        newValue.by.displayName === "");
+
+    if (isNeedSync) {
       const selectedUser = await adminDB
         .doc(`activeUsers/${newValue.by.uid}`)
         .get();

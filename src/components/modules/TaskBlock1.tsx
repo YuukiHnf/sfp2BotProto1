@@ -21,8 +21,9 @@ import {
 import { Person } from "@material-ui/icons";
 import { commentCollectionType } from "../../types/commentTypes";
 import CommentBlock1 from "./CommentBlock1";
-import { db } from "../../firebase/firebase";
+import { db, functions } from "../../firebase/firebase";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 
 type PropsType = {
   task: taskCollectionType;
@@ -45,6 +46,7 @@ const TaskBlock1 = (props: PropsType) => {
   const [param, setParam] = useState<taskParamCollectionType>(
     {} as taskParamCollectionType
   );
+  const applyTask2User = httpsCallable(functions, "applyTask2User");
 
   const [showComment, setShowComment] = useState(false);
 
@@ -64,6 +66,17 @@ const TaskBlock1 = (props: PropsType) => {
       unSub();
     };
   }, []);
+
+  const onClickDone = async () => {
+    await applyTask2User({
+      params: { uid: task.by.uid, taskId: task.id, taskState: "Done" },
+    });
+  };
+  const onClickUnDone = async () => {
+    await applyTask2User({
+      params: { uid: task.by.uid, taskId: task.id, taskState: "DoingChat" },
+    });
+  };
 
   const state2Color = () => {
     if (param.state === "ToDo") {
@@ -93,6 +106,14 @@ const TaskBlock1 = (props: PropsType) => {
           style={{ backgroundColor: state2Color() }}
         ></CardHeader>
         <CardContent>
+          {param.state === "Waiting" && (
+            <>
+              <button onClick={() => onClickDone()}>完了許可を出す</button>
+              <button onClick={() => onClickUnDone()}>
+                再度やり直し依頼を出す
+              </button>
+            </>
+          )}
           <Typography variant="h4">{task.info.title}</Typography>
           <Typography variant="subtitle1">
             {param?.state} : (Cost -{param.timeCost ?? "waiting..."})

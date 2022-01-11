@@ -10,10 +10,11 @@ import {
 } from "@material-ui/core";
 import { Person } from "@material-ui/icons";
 import { doc, onSnapshot, serverTimestamp } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../../app/hooks";
 import { selectUser } from "../../../features/user/userSlicer";
-import { db } from "../../../firebase/firebase";
+import { db, functions } from "../../../firebase/firebase";
 import useLogin from "../../../Hooks/useLogin";
 import { taskCollectionType } from "../../../types/taskTypes";
 import { activeUsersCollectionType } from "../../../types/userStateType";
@@ -40,7 +41,14 @@ const GuestBusyPage = (props: PropsType) => {
       avatarUrl: "",
     },
   } as taskCollectionType);
+  const applyTask2User = httpsCallable(functions, "applyTask2User");
   const { onLogout } = useLogin();
+
+  const onClickWaiting = async () => {
+    await applyTask2User({
+      params: { uid: user.uid, taskId: ptrTask.id, taskState: "Waiting" },
+    });
+  };
 
   useEffect(() => {
     if (user.userTaskState.currentTask) {
@@ -84,7 +92,7 @@ const GuestBusyPage = (props: PropsType) => {
             disabled={false}
             startIcon={<Icon />}
             onClick={() => {
-              console.log("完了");
+              onClickWaiting();
             }}
           >
             完了報告する!
