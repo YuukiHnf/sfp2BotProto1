@@ -72,6 +72,11 @@ const TaskBlock1 = (props: PropsType) => {
       params: { uid: task.by.uid, taskId: task.id, taskState: "Done" },
     });
   };
+  const onClickUnDone = async () => {
+    await applyTask2User({
+      params: { uid: task.by.uid, taskId: task.id, taskState: "DoingChat" },
+    });
+  };
 
   const state2Color = () => {
     if (param.state === "ToDo") {
@@ -102,7 +107,12 @@ const TaskBlock1 = (props: PropsType) => {
         ></CardHeader>
         <CardContent>
           {param.state === "Waiting" && (
-            <button onClick={() => onClickDone()}>完了許可を出す</button>
+            <>
+              <button onClick={() => onClickDone()}>完了許可を出す</button>
+              <button onClick={() => onClickUnDone()}>
+                再度やり直し依頼を出す
+              </button>
+            </>
           )}
           <Typography variant="h4">{task.info.title}</Typography>
           <Typography variant="subtitle1">

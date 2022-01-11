@@ -122,8 +122,13 @@ exports.synUpdateTaskId2UserInfo = functions.firestore
     const newValue = change.after.data() as taskCollectionType;
     const previousValue = change.before.data() as taskCollectionType;
 
-    if (newValue.by.uid && newValue.by.uid !== previousValue.by.uid) {
-      // ユーザ割り当てがなされて書き込む時
+    // ユーザ割り当てがなされて書き込む時、または、再割り当てされている時
+    const isNeedSync =
+      (newValue.by.uid && newValue.by.uid !== previousValue.by.uid) ||
+      (newValue.by.uid === previousValue.by.uid &&
+        newValue.by.displayName === "");
+
+    if (isNeedSync) {
       const selectedUser = await adminDB
         .doc(`activeUsers/${newValue.by.uid}`)
         .get();
