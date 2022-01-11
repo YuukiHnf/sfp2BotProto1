@@ -1,12 +1,6 @@
-import { TextField } from "@material-ui/core";
-import { onLog } from "firebase/app";
 import {
-  collection,
-  deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
-  runTransaction,
   serverTimestamp,
   writeBatch,
 } from "firebase/firestore";
@@ -31,16 +25,6 @@ import Button1 from "../atoms/Button1";
 import TextField1 from "../atoms/TextField1";
 import TaskTableBody1 from "../modules/TaskTableBody1";
 
-//乱数ID
-function getUniqueStr(myStrong?: number): string {
-  let strong = 1000;
-  if (myStrong) strong = myStrong;
-  return (
-    new Date().getTime().toString(16) +
-    Math.floor(strong * Math.random()).toString(16)
-  );
-}
-
 const tableColumns = [
   "ID",
   "タイトル",
@@ -50,16 +34,6 @@ const tableColumns = [
   "順序",
   "編集",
   "削除",
-];
-
-const inputTaskParams: Array<taskParamCollectionType> = [
-  {
-    id: "A1",
-    timeCost: 10,
-    afterDone: "A2",
-    state: "ToDo",
-    by: "1",
-  },
 ];
 
 const AdminTaskPage = () => {
