@@ -64,6 +64,22 @@ const AdminPage: React.VFC = () => {
   return (
     <>
       <h1>Home</h1>
+      <div>
+        {/* {showComment ?? <CommentBlock1 id={task.id} />} */}
+        <Grid container spacing={2}>
+          {tasks &&
+            tasks.map(
+              (task) =>
+                task && (
+                  <Grid key={`task-${task.id}`} item xs={4}>
+                    <TaskBlock1 task={task} />
+                  </Grid>
+                )
+            )}
+        </Grid>
+      </div>
+      <br />
+
       <p>USEID</p>
       <input
         type="text"
@@ -82,21 +98,8 @@ const AdminPage: React.VFC = () => {
         }}
       />
       <br />
+
       <button onClick={() => onClickApply()}>Apply</button>
-      <div>
-        {/* {showComment ?? <CommentBlock1 id={task.id} />} */}
-        <Grid container spacing={2}>
-          {tasks &&
-            tasks.map(
-              (task) =>
-                task && (
-                  <Grid key={`task-${task.id}`} item xs={4}>
-                    <TaskBlock1 task={task} />
-                  </Grid>
-                )
-            )}
-        </Grid>
-      </div>
     </>
   );
 };
