@@ -59,20 +59,20 @@ export type userParamsCollectionType = {
  */
 exports.applyTask2User = functions.https.onCall(
   async (
-    data: { uid: string; taskId: string; taskState: TaskStateType },
+    data: { params: { uid: string; taskId: string; taskState: TaskStateType } },
     context
   ) => {
-    const { uid, taskId, taskState } = data;
-    const batch = adminDB.batch();
+    const { uid, taskId, taskState } = data.params;
     if (context.auth) {
+      const batch = adminDB.batch();
+
+      console.log(
+        `[Apply] uid:${uid}@${typeof uid}, taskId:${taskId}@${typeof taskId}`
+      );
       // 変更対象
       const userRef = adminDB.collection("activeUsers").doc(uid);
       const userParamRef = adminDB.collection("userParams").doc(uid);
-      let taskRef = null;
-      if (taskState === "Doing") {
-        //もし新規割り当てなら
-        taskRef = adminDB.collection("tasks").doc(taskId);
-      }
+      const taskRef = adminDB.collection("tasks").doc(taskId);
       const taskParamRef = adminDB.collection("taskParams").doc(taskId);
 
       // タスクを割り当てられた時のユーザ状態
@@ -86,7 +86,7 @@ exports.applyTask2User = functions.https.onCall(
       // batch登録
       batch.update(userRef, userNewData);
       batch.update(userParamRef, userNewData);
-      taskRef && batch.update(taskRef, { by: { uid: uid } }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
+      batch.update(taskRef, { by: { uid: uid } }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
       batch.update(taskParamRef, { state: taskState, by: uid });
 
       return batch
