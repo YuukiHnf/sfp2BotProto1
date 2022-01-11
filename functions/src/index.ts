@@ -86,7 +86,10 @@ exports.applyTask2User = functions.https.onCall(
       // batch登録
       batch.update(userRef, userNewData);
       batch.update(userParamRef, userNewData);
-      batch.update(taskRef, { by: { uid: uid } }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
+      taskState === "Doing" &&
+        batch.update(taskRef, {
+          by: { uid: uid },
+        }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
       batch.update(taskParamRef, { state: taskState, by: uid });
 
       return batch
