@@ -31,7 +31,7 @@ export type UserTaskStateType = {
 export type activeUsersCollectionType = {
   uid: string;
   info: {
-    photoUrl: string;
+    avatarUrl: string;
     displayName: string;
   };
   userTaskState: UserTaskStateType;
