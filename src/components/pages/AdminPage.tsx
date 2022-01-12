@@ -60,6 +60,7 @@ const AdminPage: React.VFC = () => {
       params: { uid: applyUserId, taskId: applyTaskId, taskState: "Doing" },
     });
   };
+  //console.log(`AdminHome-Task : ${tasks}`);
 
   return (
     <>

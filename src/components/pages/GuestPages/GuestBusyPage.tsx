@@ -88,19 +88,27 @@ const GuestBusyPage = (props: PropsType) => {
           }
         ></CardHeader>
         <CardContent>
-          <Typography variant="h4">{ptrTask.info.desc}</Typography>
-          <Button1
-            disabled={false}
-            startIcon={<Icon />}
-            onClick={() => {
-              onClickWaiting();
-            }}
-          >
-            完了報告する!
-          </Button1>
-          <br />
-          {user.userTaskState.currentTask && (
-            <CommentBlock1 id={user.userTaskState.currentTask} />
+          {ptrTask.state === "Doing" || ptrTask.state === "DoingChat" ? (
+            <>
+              <Typography variant="h4">{ptrTask.info.desc}</Typography>
+              <Button1
+                disabled={false}
+                startIcon={<Icon />}
+                onClick={() => {
+                  onClickWaiting();
+                }}
+              >
+                完了報告する!
+              </Button1>
+              <br />
+              {user.userTaskState.currentTask && (
+                <CommentBlock1 id={user.userTaskState.currentTask} />
+              )}
+            </>
+          ) : (
+            <>
+              <p>チェック中です....</p>
+            </>
           )}
         </CardContent>
       </Card>
