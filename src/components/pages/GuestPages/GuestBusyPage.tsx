@@ -19,6 +19,7 @@ import useLogin from "../../../Hooks/useLogin";
 import { taskCollectionType } from "../../../types/taskTypes";
 import { activeUsersCollectionType } from "../../../types/userStateType";
 import Button1 from "../../atoms/Button1";
+import CommentBlock1 from "../../modules/CommentBlock1";
 
 type PropsType = {
   //activeUserInfo: activeUsersCollectionType;
@@ -97,6 +98,8 @@ const GuestBusyPage = (props: PropsType) => {
           >
             完了報告する!
           </Button1>
+          <br />
+          <CommentBlock1 id={ptrTask.id} />
         </CardContent>
       </Card>
     </>
