@@ -99,7 +99,9 @@ const GuestBusyPage = (props: PropsType) => {
             完了報告する!
           </Button1>
           <br />
-          <CommentBlock1 id={ptrTask.id} />
+          {user.userTaskState.currentTask && (
+            <CommentBlock1 id={user.userTaskState.currentTask} />
+          )}
         </CardContent>
       </Card>
     </>

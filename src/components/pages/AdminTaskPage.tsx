@@ -4,6 +4,7 @@ import {
   serverTimestamp,
   writeBatch,
 } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useCallback, useEffect, useState } from "react";
 import { batch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -11,6 +12,7 @@ import { useAppSelector } from "../../app/hooks";
 import { login, selectUser } from "../../features/user/userSlicer";
 import {
   db,
+  functions,
   getTaskCollectionRef,
   getTaskParamCollectionRef,
 } from "../../firebase/firebase";
@@ -51,6 +53,9 @@ const AdminTaskPage = () => {
 
   // state tasks
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
+
+  // delete関数
+  // const deleteFn = httpsCallable(functions, "recursizeDelete");
 
   const onClickCreateOrUpdateButton = async () => {
     // //firestoreに書き込み
@@ -167,6 +172,7 @@ const AdminTaskPage = () => {
       // task collection の削除
       //await deleteDoc(doc(db, "tasks", id));
       batch.delete(doc(db, "tasks", id));
+      // deleteFn({ path: `tasks/${id}` });
       // taskParam collection の削除
       // await deleteDoc(doc(db, "taskParams", id));
       batch.delete(doc(db, "taskParams", id));
