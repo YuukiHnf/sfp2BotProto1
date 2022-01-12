@@ -105,8 +105,7 @@ exports.deleteTask = functions.firestore
 //       project: process.env.GCLOUD_PROJECT,
 //       recursive: true,
 //       yes: true,
-//       token:
-//         "1//0e83V0aw4KC1DCgYIARAAGA4SNwF-L9IrFuRCbk666-cUUwlbQClBxBIrQdpm7mU4wapr7Eu1Ok93O1IA8tMujoSi6uba8yykLDM",
+//       token:,
 //     });
 
 //     return {
