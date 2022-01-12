@@ -1,5 +1,7 @@
 import * as functions from "firebase-functions";
 import admin = require("firebase-admin");
+// const firebase_tools = require("firebase-tools");
+// import firebase_tools from "firebase-tools";
 admin.initializeApp();
 
 // cloudFunction用のDB
@@ -51,6 +53,65 @@ export type userParamsCollectionType = {
   };
   isActive: boolean;
 };
+
+// /** taskCollectionが削除された時にcomments SubCollectionが削除されるようにする関数
+//  * https://firebase.google.com/docs/firestore/solutions/delete-collections
+//  * 引数は path:
+//  * 1, 削除をEventとして受け取る -> 本当は再起関数にする
+//  * 2, SubCollectionを参照する
+//  * 3, 消す
+//  */
+exports.deleteTask = functions.firestore
+  .document("tasks/{taskID}")
+  .onDelete(async (snap, context) => {
+    //subCollectionの取得
+    const subCollectionRef = adminDB.collection(
+      `tasks/${context.params.taskID}/comments`
+    );
+    const snapshot = await subCollectionRef.get();
+    // もしデータがない場合
+    if (snapshot.size === 0) {
+      return;
+    }
+    const batch = adminDB.batch();
+    snapshot.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+  });
+// exports.recursizeDelete = functions
+//   .runWith({
+//     timeoutSeconds: 540,
+//     memory: "2GB",
+//   })
+//   .https.onCall(async (data, context) => {
+//     // Only allow admin users to execute this function.
+//     if (!context.auth?.uid) {
+//       throw new functions.https.HttpsError(
+//         "permission-denied",
+//         "Must be an administrative user to initiate delete."
+//       );
+//     }
+
+//     const path = data.path;
+//     console.log(
+//       `User ${context.auth.uid} has requested to delete path ${path}`
+//     );
+
+//     // Run a recursive delete on the given document or collection path.
+//     // The 'token' must be set in the functions config, and can be generated
+//     // at the command line by running 'firebase login:ci'.
+//     await firebase_tools.firestore.delete(path, {
+//       project: process.env.GCLOUD_PROJECT,
+//       recursive: true,
+//       yes: true,
+//       token:,
+//     });
+
+//     return {
+//       path: path,
+//     };
+//   });
 
 /** （Botが）仕事を割り当てるための関数
  * 1:引数に、userIDとtaskIDをもらう
