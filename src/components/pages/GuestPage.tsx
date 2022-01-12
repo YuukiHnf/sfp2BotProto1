@@ -1,8 +1,9 @@
 import { doc, onSnapshot } from "firebase/firestore";
+import { getToken } from "firebase/messaging";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectUser, updateUserState } from "../../features/user/userSlicer";
-import { db, getUserCollectionRef } from "../../firebase/firebase";
+import { db, getUserCollectionRef, messaging } from "../../firebase/firebase";
 import useLogin from "../../Hooks/useLogin";
 import { activeUsersCollectionType } from "../../types/userStateType";
 import GuestBusyPage from "./GuestPages/GuestBusyPage";
@@ -12,8 +13,6 @@ const GuestPage = () => {
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
 
-  // const [activeUserState, setActiveUserState] =
-  //   useState<activeUsersCollectionType>({} as activeUsersCollectionType);
   const { onLogout } = useLogin();
 
   useEffect(() => {
@@ -25,6 +24,24 @@ const GuestPage = () => {
             currentTask: userSnap.data().userTaskState.currentTask,
           })
         );
+      }
+    });
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        console.log("Notification permission granted");
+
+        getToken(messaging, {
+          vapidKey: process.env.REACT_APP_FCM_VAPIDKEY,
+        }).then((currentToken) => {
+          if (currentToken) {
+            // トークン取得成功
+            console.log("currentToken:", currentToken);
+          } else {
+            console.log("[FCM] Token取得失敗");
+          }
+        });
+      } else {
+        console.log("Notification permission notify.");
       }
     });
     return () => {

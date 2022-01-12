@@ -8,6 +8,7 @@ import {
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
+import { getMessaging } from "firebase/messaging";
 
 const isEmulating = window.location.hostname === "localhost";
 const storePort = 8080;
@@ -22,8 +23,10 @@ const firebaseConfig = {
   storageBucket: isEmulating
     ? ""
     : process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
-  messagingSenderId: isEmulating ? "" : process.env.REACT_APP_MESSAGEING_SENDER,
-  appId: isEmulating ? "" : process.env.REACT_APP_FIREBASE_APIID,
+  // messagingSenderId: isEmulating ? "" : process.env.REACT_APP_MESSAGEING_SENDER,
+  messagingSenderId: process.env.REACT_APP_MESSAGEING_SENDER,
+  // appId: isEmulating ? "" : process.env.REACT_APP_FIREBASE_APIID,
+  appId: process.env.REACT_APP_FIREBASE_APIID,
   databaseURL: isEmulating ? "" : process.env.REACT_APP_FIREBASE_DATABASEURL,
 };
 
@@ -33,6 +36,7 @@ export const db = getFirestore(firebaseApp);
 export const auth = getAuth(firebaseApp);
 export const storage = getStorage(firebaseApp);
 export const functions = getFunctions(firebaseApp);
+export const messaging = getMessaging(firebaseApp);
 
 if (isEmulating) {
   connectFirestoreEmulator(db, "localhost", storePort);
