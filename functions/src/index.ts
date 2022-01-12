@@ -12,6 +12,7 @@ export type TaskStateType = "ToDo" | "Doing" | "DoingChat" | "Waiting" | "Done";
 // firebaseのTask Collection
 export type taskCollectionType = {
   id: string;
+  state: TaskStateType;
   info: {
     title: string;
     desc: string;
@@ -79,39 +80,6 @@ exports.deleteTask = functions.firestore
     });
     await batch.commit();
   });
-// exports.recursizeDelete = functions
-//   .runWith({
-//     timeoutSeconds: 540,
-//     memory: "2GB",
-//   })
-//   .https.onCall(async (data, context) => {
-//     // Only allow admin users to execute this function.
-//     if (!context.auth?.uid) {
-//       throw new functions.https.HttpsError(
-//         "permission-denied",
-//         "Must be an administrative user to initiate delete."
-//       );
-//     }
-
-//     const path = data.path;
-//     console.log(
-//       `User ${context.auth.uid} has requested to delete path ${path}`
-//     );
-
-//     // Run a recursive delete on the given document or collection path.
-//     // The 'token' must be set in the functions config, and can be generated
-//     // at the command line by running 'firebase login:ci'.
-//     await firebase_tools.firestore.delete(path, {
-//       project: process.env.GCLOUD_PROJECT,
-//       recursive: true,
-//       yes: true,
-//       token:,
-//     });
-
-//     return {
-//       path: path,
-//     };
-//   });
 
 /** （Botが）仕事を割り当てるための関数
  * 1:引数に、userIDとtaskIDをもらう
@@ -147,10 +115,14 @@ exports.applyTask2User = functions.https.onCall(
       // batch登録
       batch.update(userRef, userNewData);
       batch.update(userParamRef, userNewData);
-      taskState === "Doing" &&
-        batch.update(taskRef, {
-          by: { uid: uid },
-        }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新
+      taskState === "Doing"
+        ? batch.update(taskRef, {
+            state: taskState,
+            by: { uid: uid },
+          })
+        : batch.update(taskRef, {
+            state: taskState,
+          }); //新規割り当ての時だけ & triggerしてdisplayNameなどを更新 それ以外は、stateだけ更新
       batch.update(taskParamRef, { state: taskState, by: uid });
 
       return batch
@@ -196,6 +168,7 @@ exports.synUpdateTaskId2UserInfo = functions.firestore
       if (selectedUser.data()) {
         const uData = (await selectedUser.data()) as activeUsersCollectionType;
         return change.after.ref.update({
+          state: newValue.state,
           by: {
             uid: newValue.by.uid,
             displayName: uData.info.displayName,
@@ -206,6 +179,7 @@ exports.synUpdateTaskId2UserInfo = functions.firestore
     } else if (newValue.by.uid === "") {
       //ユーザが割り当てられなかった時
       return change.after.ref.update({
+        state: newValue.state,
         by: {
           uid: newValue.by.uid,
           displayName: "",

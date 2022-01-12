@@ -60,6 +60,7 @@ const AdminTaskPage = () => {
   const onClickCreateOrUpdateButton = async () => {
     // //firestoreに書き込み
     const newTaskData: Omit<taskCollectionType, "id"> = {
+      state: "ToDo",
       info: {
         title: inputTitle,
         imageUrl: inputImageUrl,
@@ -204,7 +205,7 @@ const AdminTaskPage = () => {
     setInputTitle("");
   };
 
-  console.log(tasks);
+  //console.log(tasks);
   return (
     <>
       <h1>AdminTaskPage</h1>
