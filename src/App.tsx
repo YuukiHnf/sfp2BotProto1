@@ -9,12 +9,22 @@ import Router, { Route, Switch, useHistory } from "react-router-dom";
 import MyHeader from "./components/organisms/Header";
 import AdminUserPage from "./components/pages/AdminUserPage";
 import AdminTaskPage from "./components/pages/AdminTaskPage";
+import { useEffect } from "react";
+import useLogin from "./Hooks/useLogin";
 
 function App() {
   const user = useAppSelector(selectUser);
-
+  const { onLogout } = useLogin();
   const history = useHistory();
   //console.log(user);
+
+  useEffect(() => {
+    return () => {
+      if (user.uid) {
+        onLogout();
+      }
+    };
+  }, []);
 
   return (
     <>

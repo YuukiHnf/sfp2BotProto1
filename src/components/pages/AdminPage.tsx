@@ -1,53 +1,17 @@
 import { Grid, makeStyles } from "@material-ui/core";
+import { onSnapshot } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../features/user/userSlicer";
+import { functions, getTaskCollectionRef } from "../../firebase/firebase";
+import useLogin from "../../Hooks/useLogin";
 import {
   taskCollectionType,
   taskParamCollectionType,
 } from "../../types/taskTypes";
 import TaskBlock1 from "../modules/TaskBlock1";
-
-//擬似的なFirestoreからの入力
-const inputTaskstate: Array<taskCollectionType> = [
-  {
-    id: "A1",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-  {
-    id: "A2",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-  {
-    id: "A3",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-  {
-    id: "A4",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   grid: {
@@ -63,15 +27,9 @@ const AdminPage: React.VFC = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
   const classes = useStyles();
+  const { onLogout } = useLogin();
 
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
-  // const [taskParams, setTaskParams] = useState<Array<taskParamCollectionType>>(
-  //   []
-  // );
-
-  // const getTaskParams = (id: string) => {
-  //   return taskParams.filter((task) => task.id === id)[0];
-  // };
 
   useEffect(() => {
     // もしLoginしていないのなら、Login画面に移す
@@ -79,9 +37,30 @@ const AdminPage: React.VFC = () => {
       history.push("/");
     }
 
-    setTasks(inputTaskstate);
-    // setTaskParams(inputTaskParams);
+    const unSub = onSnapshot(getTaskCollectionRef, (taskSnaps) => {
+      setTasks(
+        taskSnaps.docs.map(
+          (snap) => ({ ...snap.data(), id: snap.id } as taskCollectionType)
+        )
+      );
+    });
+
+    return () => {
+      unSub();
+    };
   }, []);
+
+  //console.log(tasks);
+  const [applyUserId, setApplyUserId] = useState("");
+  const [applyTaskId, setApplyTaskId] = useState("");
+  const applyTask2User = httpsCallable(functions, "applyTask2User");
+
+  const onClickApply = async () => {
+    await applyTask2User({
+      params: { uid: applyUserId, taskId: applyTaskId, taskState: "Doing" },
+    });
+  };
+  //console.log(`AdminHome-Task : ${tasks}`);
 
   return (
     <>
@@ -89,13 +68,39 @@ const AdminPage: React.VFC = () => {
       <div>
         {/* {showComment ?? <CommentBlock1 id={task.id} />} */}
         <Grid container spacing={2}>
-          {tasks.map((task) => (
-            <Grid key={task.id} item xs={4}>
-              <TaskBlock1 task={task} />
-            </Grid>
-          ))}
+          {tasks &&
+            tasks.map(
+              (task) =>
+                task && (
+                  <Grid key={`task-${task.id}`} item xs={4}>
+                    <TaskBlock1 task={task} />
+                  </Grid>
+                )
+            )}
         </Grid>
       </div>
+      <br />
+
+      <p>USEID</p>
+      <input
+        type="text"
+        value={applyUserId}
+        onChange={(e) => {
+          setApplyUserId(e.target.value);
+        }}
+      />
+      <br />
+      <p>TASKID</p>
+      <input
+        type="text"
+        value={applyTaskId}
+        onChange={(e) => {
+          setApplyTaskId(e.target.value);
+        }}
+      />
+      <br />
+
+      <button onClick={() => onClickApply()}>Apply</button>
     </>
   );
 };

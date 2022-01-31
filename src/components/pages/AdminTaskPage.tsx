@@ -1,8 +1,22 @@
-import { TextField } from "@material-ui/core";
+import {
+  doc,
+  onSnapshot,
+  serverTimestamp,
+  writeBatch,
+} from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useCallback, useEffect, useState } from "react";
+import { batch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { login, selectUser } from "../../features/user/userSlicer";
+import {
+  db,
+  functions,
+  getTaskCollectionRef,
+  getTaskParamCollectionRef,
+} from "../../firebase/firebase";
+import useLogin from "../../Hooks/useLogin";
 import {
   allTaskInfomatioinType,
   taskCollectionType,
@@ -11,44 +25,23 @@ import {
 } from "../../types/taskTypes";
 import Button1 from "../atoms/Button1";
 import TextField1 from "../atoms/TextField1";
+import TaskTableBody1 from "../modules/TaskTableBody1";
 
-//乱数ID
-function getUniqueStr(myStrong?: number): string {
-  let strong = 1000;
-  if (myStrong) strong = myStrong;
-  return (
-    new Date().getTime().toString(16) +
-    Math.floor(strong * Math.random()).toString(16)
-  );
-}
-
-const tableColumns = ["ID", "状態", "内容", "所要時間", "編集", "削除"];
-
-//擬似的なFirestoreからの入力
-const inputTaskstate: Array<taskCollectionType> = [
-  {
-    id: "A1",
-    info: {
-      title: "ゴミ拾い",
-      desc: "拾う",
-      createdat: "",
-      imageUrl: "",
-    },
-  },
-];
-const inputTaskParams: Array<taskParamCollectionType> = [
-  {
-    id: "A1",
-    timeCost: 10,
-    afterDone: "A2",
-    state: "ToDo",
-    by: "1",
-  },
+const tableColumns = [
+  "ID",
+  "タイトル",
+  "状態",
+  "内容",
+  "所要時間",
+  "順序",
+  "編集",
+  "削除",
 ];
 
 const AdminTaskPage = () => {
   const user = useAppSelector(selectUser);
   const history = useHistory();
+  const { onLogout } = useLogin();
 
   // state input
   const [inputTitle, setInputTitle] = useState("");
@@ -60,58 +53,83 @@ const AdminTaskPage = () => {
 
   // state tasks
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
-  const [tasksParam, setTasksParam] = useState<Array<taskParamCollectionType>>(
-    []
-  );
 
-  const createNewTask = () => {
-    //firestoreに書き込み
+  // delete関数
+  // const deleteFn = httpsCallable(functions, "recursizeDelete");
+
+  const onClickCreateOrUpdateButton = async () => {
+    // //firestoreに書き込み
+    const newTaskData: Omit<taskCollectionType, "id"> = {
+      state: "ToDo",
+      info: {
+        title: inputTitle,
+        imageUrl: inputImageUrl,
+        createdat: serverTimestamp(),
+        desc: inputDesc,
+      },
+      by: {
+        uid: "",
+        displayName: "",
+        avatarUrl: "",
+      },
+    };
+    const newTaskParamData: Omit<taskParamCollectionType, "id"> = {
+      timeCost: inputTimeCost,
+      afterDone: inputAfterDone,
+      state: "ToDo",
+      by: "",
+    };
     if (!editedTaskId) {
-      // 新規作成
-      const tmpId = getUniqueStr().toString();
-      // firestore Push
-      //ここは自動なのでいらない
-      const newTask: taskCollectionType = {
-        id: tmpId,
-        info: {
-          title: inputTitle,
-          imageUrl: inputImageUrl,
-          createdat: "timeStamp",
-          desc: inputDesc,
-        },
-      };
-      const newTaskParam: taskParamCollectionType = {
-        id: tmpId,
-        timeCost: inputTimeCost,
-        afterDone: inputAfterDone,
-        state: "ToDo",
-        by: "",
-      };
-      setTasks([...tasks, newTask]);
-      setTasksParam([...tasksParam, newTaskParam]);
+      /** 新規作成
+       * tasks コレクションと taskParams コレクションの二つを同時に更新したい。
+       *   このデータの一貫性は担保したい
+       *   新規に追加するだけ
+       * よってWriteができるバッチ処理を行う
+       */
+
+      try {
+        // 新しい書き込みバッチの生成
+        const batch = writeBatch(db);
+
+        // 新しいtask DocumentとそのIdを作る
+        const newTaskRef = doc(getTaskCollectionRef);
+        // Idを反映させたtaskParam Documentを作る
+        const newTaskParamRef = doc(db, "taskParams", newTaskRef.id);
+
+        // バッチ更新
+        batch.set(newTaskRef, newTaskData);
+        batch.set(newTaskParamRef, newTaskParamData);
+
+        // バッチをコミットする
+        await batch.commit();
+      } catch (e) {
+        alert(`[My-CREATE-Error]:${e}`);
+      }
     } else {
-      const newTask: taskCollectionType = {
-        id: editedTaskId,
-        info: {
-          title: inputTitle,
-          imageUrl: inputImageUrl,
-          createdat: "timeStamp",
-          desc: inputDesc,
-        },
-      };
-      const newTaskParam: taskParamCollectionType = {
-        id: editedTaskId,
-        timeCost: inputTimeCost,
-        afterDone: inputAfterDone,
-        state: "ToDo",
-        by: "",
-      };
-      setTasks([...tasks.filter((task) => task.id !== editedTaskId), newTask]);
-      setTasksParam([
-        ...tasksParam.filter((task) => task.id !== editedTaskId),
-        newTaskParam,
-      ]);
-      setEditedTaskId(null);
+      /** 編集
+       * tasks コレクションと taskParams コレクションの二つを同時に更新したい。
+       * 　　このデータの一貫性は担保したい
+       * 　　今は tasks の snapshot しか持っていない
+       * よってReadとWriteが両方できるトランザクション処理を行う気もしたけど、Idが自明なのでバッチ処理でいいのではないか
+       */
+      try {
+        // 新しい書き込みバッチの生成
+        const batch = writeBatch(db);
+
+        // 新しいtask DocumentとそのIdを作る
+        const newTaskRef = doc(db, "tasks", editedTaskId);
+        // Idを反映させたtaskParam Documentを作る
+        const newTaskParamRef = doc(db, "taskParams", editedTaskId);
+
+        // バッチ更新
+        batch.set(newTaskRef, newTaskData);
+        batch.set(newTaskParamRef, newTaskParamData);
+
+        // バッチをコミットする
+        await batch.commit();
+      } catch (e) {
+        alert(`[My-Update-Error]:${e}`);
+      }
     }
 
     onClearAllLocalState();
@@ -130,34 +148,55 @@ const AdminTaskPage = () => {
       history.push("/");
     }
 
-    setTasks(inputTaskstate);
-    setTasksParam(inputTaskParams);
+    const unSub = onSnapshot(getTaskCollectionRef, (taskSnaps) => {
+      setTasks(
+        taskSnaps.docs.map(
+          (snap) => ({ ...snap.data(), id: snap.id } as taskCollectionType)
+        )
+      );
+    });
+
+    return () => {
+      unSub();
+    };
   }, []);
 
-  const getLocalTaskParam = (id: string) => {
-    return tasksParam.filter((task) => task.id === id)[0];
-  };
+  const onClickDelete = async (id: string) => {
+    try {
+      /** 削除
+       * batchで削除する
+       */
 
-  const getLocalTasks = (id: string) => {
-    return tasks.filter((task) => task.id === id)[0];
-  };
+      const batch = writeBatch(db);
+      // 本当はSub Collectionコメントを削除しないといけない
 
-  const onClickDelete = (id: string) => {
-    // 本当はFirebaseで更新するだけ
-    setTasks([...tasks.filter((task) => task.id !== id)]);
-    setTasksParam([...tasksParam.filter((task) => task.id !== id)]);
+      // task collection の削除
+      //await deleteDoc(doc(db, "tasks", id));
+      batch.delete(doc(db, "tasks", id));
+      // deleteFn({ path: `tasks/${id}` });
+      // taskParam collection の削除
+      // await deleteDoc(doc(db, "taskParams", id));
+      batch.delete(doc(db, "taskParams", id));
+
+      await batch.commit();
+    } catch (e) {
+      alert(`[My-DELETE-Error]:${e}`);
+    }
   };
 
   // こいつはまだ編集可能にするだけ
-  const onClickEdit = (id: string) => {
-    setInputAfterDone(getLocalTaskParam(id).afterDone);
-    setInputDesc(getLocalTasks(id).info.desc);
-    setInputImageUrl(getLocalTasks(id).info.desc);
-    setInputTimeCost(getLocalTaskParam(id).timeCost);
-    setInputTitle(getLocalTasks(id).info.title);
-    setEditedTaskId(id);
+  const onClickEdit = (
+    task: taskCollectionType,
+    _taskParam: taskParamCollectionType
+  ) => {
+    setInputAfterDone(_taskParam.afterDone);
+    setInputDesc(task.info.desc);
+    setInputImageUrl(task.info.desc);
+    setInputTimeCost(_taskParam.timeCost);
+    setInputTitle(task.info.title);
+    setEditedTaskId(task.id);
   };
-
+  //全てのinputStateを空にする
   const onClearAllLocalState = () => {
     setInputAfterDone("");
     setInputDesc("");
@@ -165,6 +204,8 @@ const AdminTaskPage = () => {
     setInputTimeCost(0);
     setInputTitle("");
   };
+
+  //console.log(tasks);
   return (
     <>
       <h1>AdminTaskPage</h1>
@@ -207,7 +248,7 @@ const AdminTaskPage = () => {
       <Button1
         disabled={isInputAllData()}
         startIcon={undefined}
-        onClick={() => createNewTask()}
+        onClick={() => onClickCreateOrUpdateButton()}
       >
         {editedTaskId ? "Edit" : "ADD"}
       </Button1>
@@ -219,25 +260,17 @@ const AdminTaskPage = () => {
             ))}
           </tr>
 
-          {tasks.map((task) => (
-            <tr key={task.id}>
-              <td>{task.id}</td>
-              <td>
-                {getLocalTaskParam(task.id) && getLocalTaskParam(task.id).state}
-              </td>
-              <td>{task.info.title}</td>
-              <td>
-                {getLocalTaskParam(task.id) &&
-                  getLocalTaskParam(task.id).timeCost}
-              </td>
-              <td>
-                <button onClick={() => onClickEdit(task.id)}>EDIT</button>
-              </td>
-              <td>
-                <button onClick={() => onClickDelete(task.id)}>DELE</button>
-              </td>
-            </tr>
-          ))}
+          {tasks.map(
+            (task) =>
+              task && (
+                <TaskTableBody1
+                  key={task.id}
+                  task={task}
+                  onClickEdit={onClickEdit}
+                  onClickDelete={onClickDelete}
+                />
+              )
+          )}
         </tbody>
       </table>
     </>

@@ -5,6 +5,18 @@ import styles from "./CommentBlock1.module.css";
 
 //materialUI
 import SendIcon from "@material-ui/icons/Send";
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
+import { getTaskCollectionRef } from "../../firebase/firebase";
+import { useAppSelector } from "../../app/hooks";
+import { selectUser } from "../../features/user/userSlicer";
 
 type PropsType = {
   id: string;
@@ -18,16 +30,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const inputStartComments: Array<commentCollectionType> = [
-  {
-    commentId: "c1",
-    text: "hello",
-    avatarUrl:
-      "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
-    createdAt: "12:00",
-    displayName: "Tsuji",
-  },
-];
+// const inputStartComments: Array<commentCollectionType> = [
+//   {
+//     commentId: "c1",
+//     text: "hello",
+//     avatarUrl:
+//       "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
+//     createdat: serverTimestamp(),
+//     displayName: "Tsuji",
+//   },
+// ];
 
 function getUniqueStr(myStrong?: number): string {
   let strong = 1000;
@@ -42,24 +54,53 @@ const CommentBlock1 = (props: PropsType) => {
   const { id } = props;
   const [comments, setComments] = useState<Array<commentCollectionType>>([]);
   const [inputComment, setInputComment] = useState("");
+  const user = useAppSelector(selectUser);
 
   const classes = useStyles();
 
   useEffect(() => {
-    setComments(inputStartComments);
+    // 所望のDocument Refを取得
+    const taskDocRef = doc(getTaskCollectionRef, id);
+    // SubCollectionの取得
+    const subCollection = collection(taskDocRef, "comments");
+
+    const q = query(subCollection, orderBy("createdat", "asc"));
+
+    const unSub = onSnapshot(q, (querySnashot) => {
+      setComments(
+        querySnashot.docs.map((snap) => {
+          console.log(snap.data());
+          return {
+            commentId: snap.id,
+            text: snap.data().text,
+            avatarUrl: snap.data().avatarUrl,
+            createdat: snap.data().createdat,
+            displayName: snap.data().displayName,
+          };
+        })
+      );
+    });
+
+    // setComments(inputStartComments);
+    return () => {
+      unSub();
+    };
   }, []);
 
-  const submitComment = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newComment: commentCollectionType = {
-      commentId: getUniqueStr(),
+    const newComment: Omit<commentCollectionType, "commentId"> = {
       text: inputComment,
-      createdAt: "12:01",
-      displayName: "Yuki",
-      avatarUrl:
-        "https://firebasestorage.googleapis.com/v0/b/twitter-cloneapp-2c188.appspot.com/o/avatar%2F0.3bhndevu9y2_avatar1.png?alt=media&token=42547298-4ca8-417c-aa9f-509f916160e0",
+      createdat: serverTimestamp(),
+      displayName: user.info.displayName ?? "",
+      avatarUrl: user.info.photoUrl ?? "",
     };
-    setComments([...comments, newComment]);
+    // subCollectionへの追加
+    const taskDocRef = doc(getTaskCollectionRef, id);
+    // SubCollectionの取得
+    const subCollection = collection(taskDocRef, "comments");
+    // 追加
+    const docRef = await addDoc(subCollection, newComment);
     setInputComment("");
   };
   //console.log(comments);
@@ -71,8 +112,8 @@ const CommentBlock1 = (props: PropsType) => {
             <Avatar src={com.avatarUrl} className={classes.small} />
 
             <span>{com.displayName} </span>
-            <span>@{com.createdAt} : </span>
-            <span>{com.text} </span>
+            {/* <span>@{com.createdat} : </?span> */}
+            <span>{com.text}</span>
           </div>
         ))}
 

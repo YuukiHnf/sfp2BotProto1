@@ -58,7 +58,7 @@ const ButtonAppBar = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            BOT-Work
+            おやぶん
           </Typography>
           {user.isAdmin && (
             <>
@@ -82,10 +82,6 @@ const ButtonAppBar = () => {
           <Button color="secondary" onClick={onLogout}>
             Logout
           </Button>
-
-          {/* {user !== initialGlobalUserState.user ?? (
-            <Button color="default">Logout"</Button>
-          )} */}
         </Toolbar>
       </AppBar>
     </div>

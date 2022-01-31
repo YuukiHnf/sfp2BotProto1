@@ -1,7 +1,9 @@
+import { FieldValue, Timestamp } from "firebase/firestore";
+
 export type commentCollectionType = {
   commentId: string;
   text: string;
-  avatarUrl: string;
-  createdAt: string;
-  displayName: string;
+  avatarUrl?: string;
+  createdat: FieldValue;
+  displayName?: string;
 };
