@@ -43,7 +43,7 @@ export const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
 
   //Login
-  const { onLogin } = useLogin();
+  const { onLogin, onSignIn } = useLogin();
 
   const user = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
@@ -82,19 +82,7 @@ export const Auth = () => {
       );
       // globalなstateへの反映
       if (usrCredient) {
-        auth.currentUser &&
-          (await updateProfile(usrCredient.user, {
-            displayName: userName,
-          }));
-        onLogin({
-          dbUser: {
-            uid: usrCredient.user.uid,
-            username: usrCredient.user.displayName,
-            photoURL: usrCredient.user.photoURL,
-            isAnonymous: usrCredient.user.isAnonymous ?? false,
-          },
-          isAdmin: isAdmin,
-        });
+        onSignIn(usrCredient, userName, isAdmin);
       }
       console.log("[SUCCESS] : ", usrCredient.user);
     } catch (e: any) {

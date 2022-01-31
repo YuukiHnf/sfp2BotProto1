@@ -6,6 +6,7 @@ export type TaskStateType = "ToDo" | "Doing" | "DoingChat" | "Waiting" | "Done";
 // firebaseのTask Collection
 export type taskCollectionType = {
   id: string;
+  state: TaskStateType;
   info: {
     title: string;
     desc: string;

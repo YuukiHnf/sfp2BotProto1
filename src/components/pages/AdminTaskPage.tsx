@@ -1,15 +1,10 @@
-import { TextField } from "@material-ui/core";
-import { onLog } from "firebase/app";
 import {
-  collection,
-  deleteDoc,
   doc,
-  getDocs,
   onSnapshot,
-  runTransaction,
   serverTimestamp,
   writeBatch,
 } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useCallback, useEffect, useState } from "react";
 import { batch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -17,6 +12,7 @@ import { useAppSelector } from "../../app/hooks";
 import { login, selectUser } from "../../features/user/userSlicer";
 import {
   db,
+  functions,
   getTaskCollectionRef,
   getTaskParamCollectionRef,
 } from "../../firebase/firebase";
@@ -31,16 +27,6 @@ import Button1 from "../atoms/Button1";
 import TextField1 from "../atoms/TextField1";
 import TaskTableBody1 from "../modules/TaskTableBody1";
 
-//乱数ID
-function getUniqueStr(myStrong?: number): string {
-  let strong = 1000;
-  if (myStrong) strong = myStrong;
-  return (
-    new Date().getTime().toString(16) +
-    Math.floor(strong * Math.random()).toString(16)
-  );
-}
-
 const tableColumns = [
   "ID",
   "タイトル",
@@ -50,16 +36,6 @@ const tableColumns = [
   "順序",
   "編集",
   "削除",
-];
-
-const inputTaskParams: Array<taskParamCollectionType> = [
-  {
-    id: "A1",
-    timeCost: 10,
-    afterDone: "A2",
-    state: "ToDo",
-    by: "1",
-  },
 ];
 
 const AdminTaskPage = () => {
@@ -78,9 +54,13 @@ const AdminTaskPage = () => {
   // state tasks
   const [tasks, setTasks] = useState<Array<taskCollectionType>>([]);
 
+  // delete関数
+  // const deleteFn = httpsCallable(functions, "recursizeDelete");
+
   const onClickCreateOrUpdateButton = async () => {
     // //firestoreに書き込み
     const newTaskData: Omit<taskCollectionType, "id"> = {
+      state: "ToDo",
       info: {
         title: inputTitle,
         imageUrl: inputImageUrl,
@@ -178,7 +158,6 @@ const AdminTaskPage = () => {
 
     return () => {
       unSub();
-      onLogout();
     };
   }, []);
 
@@ -194,6 +173,7 @@ const AdminTaskPage = () => {
       // task collection の削除
       //await deleteDoc(doc(db, "tasks", id));
       batch.delete(doc(db, "tasks", id));
+      // deleteFn({ path: `tasks/${id}` });
       // taskParam collection の削除
       // await deleteDoc(doc(db, "taskParams", id));
       batch.delete(doc(db, "taskParams", id));
@@ -225,7 +205,7 @@ const AdminTaskPage = () => {
     setInputTitle("");
   };
 
-  console.log(tasks);
+  //console.log(tasks);
   return (
     <>
       <h1>AdminTaskPage</h1>

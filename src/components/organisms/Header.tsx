@@ -58,7 +58,7 @@ const ButtonAppBar = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            BOT-Work
+            おやぶん
           </Typography>
           {user.isAdmin && (
             <>

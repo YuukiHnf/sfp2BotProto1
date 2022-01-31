@@ -1,10 +1,9 @@
-import { signOut } from "firebase/auth";
-import { doc, writeBatch } from "firebase/firestore";
-import React, { useCallback } from "react";
+import { signOut, updateProfile, UserCredential } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 import { useHistory } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { login, logout, selectUser } from "../features/user/userSlicer";
-import { auth, db } from "../firebase/firebase";
+import { auth, functions } from "../firebase/firebase";
 import { DBUserType } from "../types/userStateType";
 
 const useLogin = () => {
@@ -17,28 +16,14 @@ const useLogin = () => {
   const onLogin = async (usr: { dbUser: DBUserType; isAdmin: boolean }) => {
     // Firebase側の処理
     // activeUserに書きこみ、userParamのActiveをTrueにするのを "Batch"処理
-
-    const batch = writeBatch(db);
-    const activeUsersRef = doc(db, "activeUsers", usr.dbUser.uid);
-    const userParamRef = doc(db, "userParams", usr.dbUser.uid);
-
-    batch.set(activeUsersRef, {
-      userTaskState: {
-        state: "free",
-        currentTask: "",
-      },
-      info: {
-        avatarUrl: usr.dbUser.photoURL,
-        displayName: usr.dbUser.username,
-      },
-      isAdmin: usr.isAdmin,
+    // // cloudFunction-registerActiveUser
+    const registerAsActiveUser = httpsCallable(
+      functions,
+      "registerAsActiveUser"
+    );
+    registerAsActiveUser().then((result: any) => {
+      console.log("registerAsActiveUser : ", result.data.isOk);
     });
-    batch.set(userParamRef, {
-      isActive: true,
-      userTaskState: { currentTask: "", state: "free" },
-    });
-    // Batch書き込み
-    await batch.commit();
 
     // Globalstateに反映させる
     dispatch(
@@ -55,17 +40,17 @@ const useLogin = () => {
     const onSignOut = async () => {
       console.log("try:signOut");
       try {
+        //cloudFunction - unregisterActiveUser()
+        // // cloudFunction-registerActiveUser
+        const unRegisterAsActiveUser = httpsCallable(
+          functions,
+          "unRegisterAsActiveUser"
+        );
+        unRegisterAsActiveUser({ uid: user.uid }).then((result: any) => {
+          console.log("unRegisterAsActiveUser : ", result.data.isOk);
+        });
         await signOut(auth);
-        const batch = writeBatch(db);
-        const activeUsersRef = doc(db, "activeUsers", user.uid);
-        const userParamRef = doc(db, "userParams", user.uid);
-
-        batch.delete(activeUsersRef);
-        batch.update(userParamRef, { isActive: false });
-        // Batch書き込み
-        await batch.commit();
         dispatch(logout(undefined));
-        console.log("success:signOut");
       } catch (e: any) {
         alert(e.message);
       }
@@ -77,7 +62,39 @@ const useLogin = () => {
     history.push("/");
   };
 
-  return { onLogin, onLogout };
+  const onSignIn = async (
+    usrCredient: UserCredential,
+    userName: string,
+    isAdmin: boolean
+  ) => {
+    // userのDisplayNameやPhotoUrlを更新
+    auth.currentUser &&
+      (await updateProfile(usrCredient.user, {
+        displayName: userName,
+      }));
+    // userParamを立てる（ListenerでFunctionsがしてくれている）
+    // Login時の処理をする
+    //  ・cloudFunction-registerActiveUser
+    const registerUserParamsListener = httpsCallable(
+      functions,
+      "registerAsActiveUser"
+    );
+    registerUserParamsListener().then((result: any) => {
+      console.log("registerAsActiveUser : ", result.data.isOk);
+    });
+    // globalに入れる
+    onLogin({
+      dbUser: {
+        uid: usrCredient.user.uid,
+        username: usrCredient.user.displayName,
+        photoURL: usrCredient.user.photoURL,
+        isAnonymous: usrCredient.user.isAnonymous ?? false,
+      },
+      isAdmin: isAdmin,
+    });
+  };
+
+  return { onLogin, onLogout, onSignIn };
 };
 
 export default useLogin;

@@ -1,10 +1,11 @@
 import { Grid, makeStyles } from "@material-ui/core";
-import { getDocs, onSnapshot } from "firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../features/user/userSlicer";
-import { getTaskCollectionRef } from "../../firebase/firebase";
+import { functions, getTaskCollectionRef } from "../../firebase/firebase";
 import useLogin from "../../Hooks/useLogin";
 import {
   taskCollectionType,
@@ -46,11 +47,20 @@ const AdminPage: React.VFC = () => {
 
     return () => {
       unSub();
-      onLogout();
     };
   }, []);
 
   //console.log(tasks);
+  const [applyUserId, setApplyUserId] = useState("");
+  const [applyTaskId, setApplyTaskId] = useState("");
+  const applyTask2User = httpsCallable(functions, "applyTask2User");
+
+  const onClickApply = async () => {
+    await applyTask2User({
+      params: { uid: applyUserId, taskId: applyTaskId, taskState: "Doing" },
+    });
+  };
+  //console.log(`AdminHome-Task : ${tasks}`);
 
   return (
     <>
@@ -69,6 +79,28 @@ const AdminPage: React.VFC = () => {
             )}
         </Grid>
       </div>
+      <br />
+
+      <p>USEID</p>
+      <input
+        type="text"
+        value={applyUserId}
+        onChange={(e) => {
+          setApplyUserId(e.target.value);
+        }}
+      />
+      <br />
+      <p>TASKID</p>
+      <input
+        type="text"
+        value={applyTaskId}
+        onChange={(e) => {
+          setApplyTaskId(e.target.value);
+        }}
+      />
+      <br />
+
+      <button onClick={() => onClickApply()}>Apply</button>
     </>
   );
 };

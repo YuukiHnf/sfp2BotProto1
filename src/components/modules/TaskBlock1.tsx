@@ -21,8 +21,9 @@ import {
 import { Person } from "@material-ui/icons";
 import { commentCollectionType } from "../../types/commentTypes";
 import CommentBlock1 from "./CommentBlock1";
-import { db } from "../../firebase/firebase";
+import { db, functions } from "../../firebase/firebase";
 import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { httpsCallable } from "firebase/functions";
 
 type PropsType = {
   task: taskCollectionType;
@@ -42,9 +43,10 @@ const useStyles = (theme: Theme) => {
 
 const TaskBlock1 = (props: PropsType) => {
   const { task } = props;
-  const [param, setParam] = useState<taskParamCollectionType>(
-    {} as taskParamCollectionType
-  );
+  // const [param, setParam] = useState<taskParamCollectionType>(
+  //   {} as taskParamCollectionType
+  // );
+  const applyTask2User = httpsCallable(functions, "applyTask2User");
 
   const [showComment, setShowComment] = useState(false);
 
@@ -52,38 +54,50 @@ const TaskBlock1 = (props: PropsType) => {
   let styles = useStyles(theme)();
 
   useEffect(() => {
-    const unSub = onSnapshot(doc(db, "taskParams", task.id), (taskSnap) => {
-      if (taskSnap.exists()) {
-        setParam({
-          ...taskSnap.data(),
-          id: taskSnap.id,
-        } as taskParamCollectionType);
-      }
-    });
-    return () => {
-      unSub();
-    };
+    // const unSub = onSnapshot(doc(db, "taskParams", task.id), (taskSnap) => {
+    //   if (taskSnap.exists()) {
+    //     setParam({
+    //       ...taskSnap.data(),
+    //       id: taskSnap.id,
+    //     } as taskParamCollectionType);
+    //   }
+    // });
+    // return () => {
+    //   unSub();
+    // };
   }, []);
 
+  const onClickDone = async () => {
+    await applyTask2User({
+      params: { uid: task.by.uid, taskId: task.id, taskState: "Done" },
+    });
+  };
+  const onClickUnDone = async () => {
+    await applyTask2User({
+      params: { uid: task.by.uid, taskId: task.id, taskState: "DoingChat" },
+    });
+  };
+
   const state2Color = () => {
-    if (param.state === "ToDo") {
+    if (task.state === "ToDo") {
       return "white";
-    } else if (param.state === "Waiting") {
+    } else if (task.state === "Waiting") {
       return "red";
-    } else if (param.state === "Doing") {
+    } else if (task.state === "Doing") {
       return "green";
-    } else if (param.state === "DoingChat") {
+    } else if (task.state === "DoingChat") {
       return "yellow";
-    } else if (param.state === "Done") {
+    } else if (task.state === "Done") {
       return "blue";
     }
   };
+  console.log(task);
 
   return (
     <>
       <Card className={styles.card}>
         <CardHeader
-          title={`state : ${param.state ?? "waiting..."}`}
+          title={`state : ${task.state ?? "waiting..."}`}
           subheader={`担当者:${task.by.displayName ?? "未割り当て"}`}
           avatar={
             <Avatar>
@@ -93,10 +107,16 @@ const TaskBlock1 = (props: PropsType) => {
           style={{ backgroundColor: state2Color() }}
         ></CardHeader>
         <CardContent>
+          {task.state === "Waiting" && (
+            <>
+              <button onClick={() => onClickDone()}>完了許可を出す</button>
+              <button onClick={() => onClickUnDone()}>
+                再度やり直し依頼を出す
+              </button>
+            </>
+          )}
           <Typography variant="h4">{task.info.title}</Typography>
-          <Typography variant="subtitle1">
-            {param?.state} : (Cost -{param.timeCost ?? "waiting..."})
-          </Typography>
+          <Typography variant="subtitle1">{task.state}</Typography>
           <Typography className={styles.content}>
             説明 : {task.info.desc}
           </Typography>
